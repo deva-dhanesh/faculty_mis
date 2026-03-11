@@ -1,0 +1,95 @@
+{% extends "layouts/faculty_base.html" %}
+{% block title %}My Fellowships{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>My Fellowships</h1>
+    <p>Track awards, fellowships and grants you have received.</p>
+  </div>
+  <div class="page-header-actions">
+    <a href="{{ url_for('bulk_upload_fellowships') }}" class="btn btn-ghost">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right:5px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      Bulk Upload
+    </a>
+    <a href="{{ url_for('add_fellowship') }}" class="btn btn-primary">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add Fellowship
+    </a>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <h3>All Fellowships</h3>
+    <p>{{ fellowships|length if fellowships else 0 }} record(s)</p>
+  </div>
+  <div class="card-body-flush">
+    {% if fellowships and fellowships|length > 0 %}
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Award / Fellowship</th>
+            <th>Financial Support</th>
+            <th>Support Type</th>
+            <th>Nat/Int</th>
+            <th>Date of Award</th>
+            <th>Agency</th>
+            <th>Duration</th>
+            <th>Research Topic</th>
+            <th>Doc</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% set ni_badge = {
+            'National':      'badge-blue',
+            'International': 'badge-purple'
+          } %}
+          {% for f in fellowships %}
+          <tr>
+            <td class="text-muted text-sm">{{ loop.index }}</td>
+            <td class="td-bold" style="max-width:200px;word-break:break-word;">{{ f.award_name }}</td>
+            <td class="text-sm">{{ f.financial_support or '—' }}</td>
+            <td class="text-sm">{{ f.support_type or '—' }}</td>
+            <td>
+              {% if f.national_international %}
+                <span class="badge {{ ni_badge.get(f.national_international, 'badge-gray') }}">{{ f.national_international }}</span>
+              {% else %}—{% endif %}
+            </td>
+            <td class="text-muted text-sm">{{ f.award_date.strftime("%d-%m-%Y") if f.award_date else '—' }}</td>
+            <td class="text-sm" style="max-width:140px;word-break:break-word;">{{ f.awarding_agency or '—' }}</td>
+            <td class="text-sm">{{ f.duration or '—' }}</td>
+            <td class="text-sm" style="max-width:160px;word-break:break-word;">{{ f.research_topic or '—' }}</td>
+            <td>
+              {% if f.grant_letter_link %}
+                <a href="{{ f.grant_letter_link }}" target="_blank" class="btn btn-ghost btn-sm" title="Grant Letter">📄</a>
+              {% else %}—{% endif %}
+            </td>
+            <td style="white-space:nowrap;">
+              <a href="{{ url_for('edit_fellowship', entry_id=f.id) }}" class="btn btn-ghost btn-sm">Edit</a>
+              <form method="POST" action="{{ url_for('delete_fellowship', entry_id=f.id) }}" style="display:inline;" onsubmit="return confirm('Delete this fellowship record? This cannot be undone.');">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <button type="submit" class="btn btn-sm" style="color:#e53e3e;border-color:#e53e3e;background:transparent;">Delete</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#CBD5E0" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      <h3>No fellowships yet</h3>
+      <p>Add your first fellowship or award to get started.</p>
+      <a href="{{ url_for('add_fellowship') }}" class="btn btn-primary" style="margin-top:12px;">Add Fellowship</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

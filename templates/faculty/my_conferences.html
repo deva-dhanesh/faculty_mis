@@ -1,0 +1,262 @@
+{% extends "layouts/faculty_base.html" %}
+{% block title %}Conferences{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>Conferences</h1>
+    <p>Manage conferences you have participated in and conferences you have organised.</p>
+  </div>
+  <div class="page-header-actions">
+    <a href="{{ url_for('bulk_upload_conferences_participated') }}" class="btn btn-ghost tab-action tab-action-participated">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right:5px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      Bulk Participated
+    </a>
+    <a href="{{ url_for('add_conference_participated') }}" class="btn btn-primary tab-action tab-action-participated">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right:5px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add Participated
+    </a>
+    <a href="{{ url_for('bulk_upload_conferences_organised') }}" class="btn btn-ghost tab-action tab-action-organised" style="display:none;">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right:5px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      Bulk Organised
+    </a>
+    <a href="{{ url_for('add_conference_organised') }}" class="btn btn-primary tab-action tab-action-organised" style="display:none;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right:5px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add Organised
+    </a>
+  </div>
+</div>
+
+<!-- Tab Navigation -->
+<div style="display:flex;gap:0;border-bottom:2px solid var(--border-color);margin-bottom:24px;">
+  <button class="conf-tab active" data-tab="participated"
+          style="padding:10px 24px;border:none;background:none;font-weight:600;font-size:14px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s;">
+    🎤 Participated
+    <span class="badge badge-blue" style="margin-left:6px;">{{ participated|length }}</span>
+  </button>
+  <button class="conf-tab" data-tab="organised"
+          style="padding:10px 24px;border:none;background:none;font-weight:600;font-size:14px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s;">
+    🏛 Organised
+    <span class="badge badge-green" style="margin-left:6px;">{{ organised|length }}</span>
+  </button>
+</div>
+
+<!-- ═══════════════════ CONFERENCES PARTICIPATED ═══════════════════ -->
+<div id="tab-participated" class="conf-panel">
+  <div class="card">
+    <div class="card-header">
+      <h3>Conferences Participated</h3>
+      <p>{{ participated|length }} record(s) — Conferences attended / papers presented.</p>
+    </div>
+    <div class="card-body-flush">
+      {% if participated %}
+      <div class="table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Conference Title</th>
+              <th>Paper Title</th>
+              <th>Organisers</th>
+              <th>Leads to Pub</th>
+              <th>Focus Area</th>
+              <th>Duration</th>
+              <th>Nat/Int</th>
+              <th>Indexed</th>
+              <th>Links</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% set ni_badge = {'National': 'badge-blue', 'International': 'badge-purple'} %}
+            {% for c in participated %}
+            <tr>
+              <td class="text-muted text-sm">{{ loop.index }}</td>
+              <td class="td-bold" style="max-width:200px;word-break:break-word;">{{ c.conference_title }}</td>
+              <td style="max-width:180px;word-break:break-word;">{{ c.paper_title or '—' }}</td>
+              <td class="text-sm">{{ c.organisers or '—' }}</td>
+              <td>
+                {% if c.leads_to_publication == 'Yes' %}
+                  <span class="badge badge-green">Yes</span>
+                {% elif c.leads_to_publication == 'No' %}
+                  <span class="badge badge-gray">No</span>
+                {% else %}—{% endif %}
+              </td>
+              <td class="text-sm">{{ c.focus_area or '—' }}</td>
+              <td class="text-muted text-sm" style="white-space:nowrap;">
+                {{ c.date_from.strftime("%d-%m-%Y") if c.date_from else '?' }}
+                &ndash;
+                {{ c.date_to.strftime("%d-%m-%Y") if c.date_to else '?' }}
+              </td>
+              <td>
+                {% if c.national_international %}
+                  <span class="badge {{ ni_badge.get(c.national_international, 'badge-gray') }}">{{ c.national_international }}</span>
+                {% else %}—{% endif %}
+              </td>
+              <td>
+                {% if c.proceedings_indexed == 'Yes' %}
+                  <span class="badge badge-green">Yes</span>
+                {% elif c.proceedings_indexed == 'No' %}
+                  <span class="badge badge-gray">No</span>
+                {% else %}—{% endif %}
+              </td>
+              <td style="white-space:nowrap;">
+                {% if c.paper_link %}
+                  <a href="{{ c.paper_link }}" target="_blank" class="btn btn-ghost btn-sm" title="Paper">📄</a>
+                {% endif %}
+                {% if c.certificate_link %}
+                  <a href="{{ c.certificate_link }}" target="_blank" class="btn btn-ghost btn-sm" title="Certificate">🏅</a>
+                {% endif %}
+                {% if not c.paper_link and not c.certificate_link %}—{% endif %}
+              </td>
+              <td style="white-space:nowrap;">
+                <a href="{{ url_for('edit_conference_participated', entry_id=c.id) }}" class="btn btn-ghost btn-sm">Edit</a>
+                <form method="POST" action="{{ url_for('delete_conference_participated', entry_id=c.id) }}"
+                      style="display:inline;" onsubmit="return confirm('Delete this entry?');">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                  <button type="submit" class="btn btn-sm" style="color:#e53e3e;border-color:#e53e3e;background:transparent;">Delete</button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="empty-state">
+        <div class="empty-state-icon">🎤</div>
+        <h3>No conferences participated yet</h3>
+        <p>Add conferences you have attended or presented papers at.</p>
+        <div style="margin-top:20px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+          <a href="{{ url_for('add_conference_participated') }}" class="btn btn-primary btn-sm">Add Participated</a>
+          <a href="{{ url_for('bulk_upload_conferences_participated') }}" class="btn btn-ghost btn-sm">Bulk Upload</a>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ CONFERENCES ORGANISED ═══════════════════ -->
+<div id="tab-organised" class="conf-panel" style="display:none;">
+  <div class="card">
+    <div class="card-header">
+      <h3>Conferences Organised</h3>
+      <p>{{ organised|length }} record(s) — Conferences, seminars & workshops you organised.</p>
+    </div>
+    <div class="card-body-flush">
+      {% if organised %}
+      <div class="table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Title</th>
+              <th>Department</th>
+              <th>Role</th>
+              <th>Collaboration</th>
+              <th>Focus Area</th>
+              <th>Nat/Int</th>
+              <th>Participants</th>
+              <th>Duration</th>
+              <th>Indexed</th>
+              <th>Report</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% set ni_badge = {'National': 'badge-blue', 'International': 'badge-purple'} %}
+            {% for c in organised %}
+            <tr>
+              <td class="text-muted text-sm">{{ loop.index }}</td>
+              <td class="td-bold" style="max-width:200px;word-break:break-word;">{{ c.title }}</td>
+              <td class="text-sm">{{ c.department or '—' }}</td>
+              <td class="text-sm">{{ c.faculty_role or '—' }}</td>
+              <td class="text-sm" style="max-width:150px;word-break:break-word;">{{ c.collaboration or '—' }}</td>
+              <td class="text-sm">{{ c.focus_area or '—' }}</td>
+              <td>
+                {% if c.national_international %}
+                  <span class="badge {{ ni_badge.get(c.national_international, 'badge-gray') }}">{{ c.national_international }}</span>
+                {% else %}—{% endif %}
+              </td>
+              <td style="text-align:center;">{{ c.num_participants if c.num_participants is not none else '—' }}</td>
+              <td class="text-muted text-sm" style="white-space:nowrap;">
+                {{ c.date_from.strftime("%d-%m-%Y") if c.date_from else '?' }}
+                &ndash;
+                {{ c.date_to.strftime("%d-%m-%Y") if c.date_to else '?' }}
+              </td>
+              <td>
+                {% if c.proceedings_indexed == 'Yes' %}
+                  <span class="badge badge-green">Yes</span>
+                {% elif c.proceedings_indexed == 'No' %}
+                  <span class="badge badge-gray">No</span>
+                {% else %}—{% endif %}
+              </td>
+              <td>
+                {% if c.activity_report_link %}
+                  <a href="{{ c.activity_report_link }}" target="_blank" class="btn btn-ghost btn-sm">View</a>
+                {% else %}—{% endif %}
+              </td>
+              <td style="white-space:nowrap;">
+                <a href="{{ url_for('edit_conference_organised', entry_id=c.id) }}" class="btn btn-ghost btn-sm">Edit</a>
+                <form method="POST" action="{{ url_for('delete_conference_organised', entry_id=c.id) }}"
+                      style="display:inline;" onsubmit="return confirm('Delete this entry?');">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                  <button type="submit" class="btn btn-sm" style="color:#e53e3e;border-color:#e53e3e;background:transparent;">Delete</button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="empty-state">
+        <div class="empty-state-icon">🏛</div>
+        <h3>No conferences organised yet</h3>
+        <p>Add conferences, seminars or workshops you have organised.</p>
+        <div style="margin-top:20px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+          <a href="{{ url_for('add_conference_organised') }}" class="btn btn-primary btn-sm">Add Organised</a>
+          <a href="{{ url_for('bulk_upload_conferences_organised') }}" class="btn btn-ghost btn-sm">Bulk Upload</a>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var tabs = document.querySelectorAll('.conf-tab');
+
+  function switchTab(activeTab) {
+    var which = activeTab.dataset.tab;
+    tabs.forEach(function (t) {
+      t.classList.remove('active');
+      t.style.borderBottomColor = 'transparent';
+      t.style.color = '';
+    });
+    document.querySelectorAll('.conf-panel').forEach(function (p) {
+      p.style.display = 'none';
+    });
+    activeTab.classList.add('active');
+    activeTab.style.borderBottomColor = 'var(--primary)';
+    activeTab.style.color = 'var(--primary)';
+    document.getElementById('tab-' + which).style.display = 'block';
+    // toggle header action buttons
+    document.querySelectorAll('.tab-action').forEach(function (btn) {
+      btn.style.display = btn.classList.contains('tab-action-' + which) ? '' : 'none';
+    });
+  }
+
+  tabs.forEach(function (tab) {
+    tab.addEventListener('click', function () { switchTab(tab); });
+  });
+
+  // Activate first tab on load
+  if (tabs[0]) switchTab(tabs[0]);
+})();
+</script>
+
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends "layouts/admin_base.html" %}
+{% block title %}Add Faculty{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>Add Faculty User</h1>
+    <p>Create a new faculty account. The faculty member will log in and complete their profile.</p>
+  </div>
+  <div class="page-header-actions">
+    <a href="{{ url_for('view_faculty_profiles') }}" class="btn btn-ghost">
+      ← Back to Profiles
+    </a>
+  </div>
+</div>
+
+<div class="form-card" style="max-width:640px;">
+  <div class="form-card-header">
+    <h2>New Faculty Account</h2>
+    <p>Fill in the details below to register a new faculty member.</p>
+  </div>
+  <div class="form-card-body">
+    <form method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="employee_id">Employee ID <span>*</span></label>
+          <input class="form-input" type="text" id="employee_id" name="employee_id"
+                 placeholder="e.g. EMP001" required/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="full_name">Full Name <span>*</span></label>
+          <input class="form-input" type="text" id="full_name" name="full_name"
+                 placeholder="e.g. Dr. Jane Smith" required/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="email">Email Address <span>*</span></label>
+          <input class="form-input" type="email" id="email" name="email"
+                 placeholder="faculty@university.edu" required autocomplete="off"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="phone">Phone Number <span>*</span></label>
+          <input class="form-input" type="text" id="phone" name="phone"
+                 placeholder="10-digit mobile number" required/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="department">Department</label>
+          <input class="form-input" type="text" id="department" name="department"
+                 placeholder="e.g. Computer Science"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="designation">Designation</label>
+          <input class="form-input" type="text" id="designation" name="designation"
+                 placeholder="e.g. Assistant Professor"/>
+        </div>
+        <div class="form-group form-span-2">
+          <label class="form-label" for="password">Password <span>*</span></label>
+          <input class="form-input" type="password" id="password" name="password"
+                 placeholder="Min 8 chars" required autocomplete="new-password"/>
+          <div class="form-hint">Minimum 8 characters, at least 1 uppercase letter and 1 digit.</div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Create Faculty Account
+        </button>
+        <a href="{{ url_for('view_faculty_profiles') }}" class="btn btn-ghost">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

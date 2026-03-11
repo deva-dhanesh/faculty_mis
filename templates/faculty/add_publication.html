@@ -1,0 +1,194 @@
+{% extends "layouts/faculty_base.html" %}
+{% block title %}Add Publication{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>Add Publication</h1>
+    <p>Record a new journal article, conference paper, or book chapter.</p>
+  </div>
+  <div class="page-header-actions">
+    <a href="{{ url_for('my_publications') }}" class="btn btn-ghost">← My Publications</a>
+  </div>
+</div>
+
+<div class="form-card" style="max-width:900px;">
+  <div class="form-card-header">
+    <h2>Publication Details</h2>
+    <p>Fill in the bibliographic details of your publication.</p>
+  </div>
+  <div class="form-card-body">
+
+    <!-- DOI Auto-fetch -->
+    <div style="background:#eff6ff;border:1.5px solid #bfdbfe;border-radius:8px;padding:16px 20px;margin-bottom:24px;">
+      <div style="font-size:13px;font-weight:600;color:#1d4ed8;margin-bottom:10px;">
+        ⚡ Auto-fill from DOI
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+        <input class="form-input" type="text" id="doi_lookup" placeholder="Paste DOI — e.g. 10.1000/xyz123"
+               style="flex:1;min-width:220px;"/>
+        <button type="button" id="fetch_doi_btn" class="btn btn-primary" style="flex-shrink:0;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          Fetch Details
+        </button>
+      </div>
+      <div id="doi_status" style="font-size:12.5px;margin-top:8px;display:none;"></div>
+    </div>
+
+    <form method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+      <div class="form-group">
+        <label class="form-label" for="title">Title of the Paper / Conference Proceeding <span>*</span></label>
+        <input class="form-input" type="text" id="title" name="title"
+               placeholder="Enter the full title" required/>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="author_position">Position of Faculty as Author</label>
+          <select class="form-select" id="author_position" name="author_position">
+            <option value="">Select</option>
+            {% for opt in ['First Author','Second Author','Third Author','Corresponding Author','Co-Author'] %}
+            <option>{{ opt }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="scholar_id">Scopus ID / ORCID ID / Google Scholar ID</label>
+          <input class="form-input" type="text" id="scholar_id" name="scholar_id"
+                 placeholder="e.g. 0000-0002-1234-5678"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="journal">Name of Journal</label>
+          <input class="form-input" type="text" id="journal" name="journal"
+                 placeholder="e.g. IEEE Transactions on..."/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="publication_date">Date of Publication</label>
+          <input class="form-input" type="date" id="publication_date" name="publication_date"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="issn_isbn">ISSN / ISBN Number</label>
+          <input class="form-input" type="text" id="issn_isbn" name="issn_isbn"
+                 placeholder="e.g. 1234-5678"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="publication_type">Type of Publication</label>
+          <select class="form-select" id="publication_type" name="publication_type">
+            <option value="">Select</option>
+            {% for opt in ['Journal','Conference'] %}
+            <option>{{ opt }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="journal_quartile">Journal Quartile</label>
+          <select class="form-select" id="journal_quartile" name="journal_quartile">
+            <option value="">Select</option>
+            {% for opt in ['Q1','Q2','Q3','Q4'] %}
+            <option>{{ opt }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="impact_factor">Impact Factor</label>
+          <input class="form-input" type="text" id="impact_factor" name="impact_factor"
+                 placeholder="e.g. 4.52"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="h_index">h-index</label>
+          <input class="form-input" type="text" id="h_index" name="h_index"
+                 placeholder="e.g. 12"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="citation_index">Citation Index</label>
+          <input class="form-input" type="text" id="citation_index" name="citation_index"
+                 placeholder="e.g. 150"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="indexing">Indexing</label>
+          <select class="form-select" id="indexing" name="indexing">
+            <option value="">Select</option>
+            {% for opt in ['Scopus','WoS','UGC CARE','PubMed','Others'] %}
+            <option>{{ opt }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="doi">DOI</label>
+          <input class="form-input" type="text" id="doi" name="doi"
+                 placeholder="e.g. 10.1000/xyz123"/>
+        </div>
+        <div class="form-group form-span-2">
+          <label class="form-label" for="article_link">Link to Article / Conference Proceeding</label>
+          <input class="form-input" type="url" id="article_link" name="article_link"
+                 placeholder="https://..."/>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Add Publication</button>
+        <a href="{{ url_for('my_publications') }}" class="btn btn-ghost">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+document.getElementById('fetch_doi_btn').addEventListener('click', function () {
+  var doi = document.getElementById('doi_lookup').value.trim();
+  var status = document.getElementById('doi_status');
+  if (!doi) { return; }
+
+  var btn = this;
+  btn.disabled = true;
+  btn.textContent = 'Fetching…';
+  status.style.display = 'block';
+  status.style.color = '#64748b';
+  status.textContent = 'Looking up DOI via CrossRef…';
+
+  fetch('/api/fetch_doi?doi=' + encodeURIComponent(doi))
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.error) {
+        status.style.color = '#dc2626';
+        status.textContent = '✖ ' + data.error + '. Please fill in the details manually.';
+      } else {
+        if (data.title)     document.getElementById('title').value     = data.title;
+        if (data.journal)   document.getElementById('journal').value   = data.journal;
+        if (data.doi)       document.getElementById('doi').value       = data.doi;
+        if (data.issn_isbn) document.getElementById('issn_isbn').value = data.issn_isbn;
+        if (data.pub_date) {
+          // Convert DD-MMM-YYYY to YYYY-MM-DD for date input
+          try {
+            var d = new Date(data.pub_date);
+            if (!isNaN(d)) {
+              document.getElementById('publication_date').value = d.toISOString().split('T')[0];
+            }
+          } catch(e) {}
+        }
+        status.style.color = '#16a34a';
+        status.textContent = '✔ Details filled in from CrossRef. Review and complete any remaining fields.';
+      }
+    })
+    .catch(function() {
+      status.style.color = '#dc2626';
+      status.textContent = '✖ Could not reach CrossRef. Please fill in the details manually.';
+    })
+    .finally(function() {
+      btn.disabled = false;
+      btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Fetch Details';
+    });
+});
+
+// Allow pressing Enter in DOI lookup field
+document.getElementById('doi_lookup').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') { e.preventDefault(); document.getElementById('fetch_doi_btn').click(); }
+});
+</script>
+
+{% endblock %}

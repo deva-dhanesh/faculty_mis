@@ -1,0 +1,148 @@
+{% extends "layouts/admin_base.html" %}
+{% block title %}Documents{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>Faculty Documents</h1>
+    <p>All documents uploaded by faculty members.</p>
+  </div>
+  <div class="page-header-actions">
+    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-ghost">← Dashboard</a>
+  </div>
+</div>
+
+<div class="card">
+
+  <!-- Filter Bar -->
+  <form method="GET" action="{{ url_for('view_documents') }}">
+    <div class="filter-bar">
+      <div class="filter-group filter-search">
+        <label>Search</label>
+        <input type="text" name="q" value="{{ q }}" placeholder="File name, document type…">
+      </div>
+      <div class="filter-group">
+        <label>Document Type</label>
+        <select name="doc_type" class="form-select">
+          <option value="">All Types</option>
+          {% for dt in doc_types %}
+            <option value="{{ dt }}" {% if doc_type == dt %}selected{% endif %}>{{ dt }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="filter-actions">
+        <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+        {% if q or doc_type %}
+          <a href="{{ url_for('view_documents') }}" class="btn btn-ghost btn-sm">Clear</a>
+        {% endif %}
+      </div>
+    </div>
+  </form>
+
+  <div class="card-header" style="border-top:none;">
+    <div>
+      <h3>Documents{% if q or doc_type %}&nbsp;<span class="filter-active-badge"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46"/></svg> Filtered</span>{% endif %}</h3>
+      <p class="filter-result-count">{{ documents|length }} document(s) found</p>
+    </div>
+  </div>
+  <div class="card-body-flush">
+    {% if documents %}
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Faculty ID</th>
+            <th>Document Type</th>
+            <th>File Name</th>
+            <th>Uploaded At</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for doc in documents %}
+          <tr>
+            <td class="text-muted text-sm">{{ doc.id }}</td>
+            <td><span class="badge badge-blue">{{ doc.user_id }}</span></td>
+            <td>{{ doc.document_type or '—' }}</td>
+            <td class="td-bold">{{ doc.file_name or '—' }}</td>
+            <td class="text-muted text-sm">
+              {% if doc.uploaded_at %}{{ doc.uploaded_at.strftime("%d %b %Y, %H:%M") }}{% else %}—{% endif %}
+            </td>
+            <td>
+              <a href="{{ url_for('download_document', doc_id=doc.id) }}"
+                 class="btn btn-ghost btn-sm">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Download
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <div class="empty-state-icon">📁</div>
+      {% if q or doc_type %}
+        <h3>No results match your filters</h3>
+        <p>Try adjusting the filters or <a href="{{ url_for('view_documents') }}">clear all</a>.</p>
+      {% else %}
+        <h3>No documents yet</h3>
+        <p>Faculty members have not uploaded any documents.</p>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}
+
+<a href="/admin_dashboard">Back to Dashboard</a>
+
+<br><br>
+
+{% if documents %}
+
+<table border="1" cellpadding="8">
+
+<tr>
+<th>ID</th>
+<th>User ID</th>
+<th>Document Type</th>
+<th>File Name</th>
+<th>Uploaded At</th>
+<th>Download</th>
+</tr>
+
+{% for doc in documents %}
+
+<tr>
+
+<td>{{ doc.id }}</td>
+<td>{{ doc.user_id }}</td>
+<td>{{ doc.document_type }}</td>
+<td>{{ doc.file_name }}</td>
+<td>{{ doc.uploaded_at }}</td>
+
+<td>
+<a href="/download_document/{{ doc.id }}">
+Download
+</a>
+</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+{% else %}
+
+<p>No documents found</p>
+
+{% endif %}
+
+</body>
+</html>

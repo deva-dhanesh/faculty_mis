@@ -1,0 +1,123 @@
+﻿{% extends "layouts/faculty_base.html" %}
+{% block title %}Add Research Project{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>Add Research Project</h1>
+    <p>Record a funded or ongoing research project.</p>
+  </div>
+  <div class="page-header-actions">
+    <a href="{{ url_for('my_projects') }}" class="btn btn-ghost"> My Projects</a>
+  </div>
+</div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% for category, message in messages %}
+    <div class="alert alert-{{ category }}" style="margin-bottom:16px;">{{ message }}</div>
+  {% endfor %}
+{% endwith %}
+
+<div class="form-card" style="max-width:860px;">
+  <div class="form-card-header">
+    <h2>Project Details</h2>
+  </div>
+  <div class="form-card-body">
+    <form method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+      <div class="form-section-title" style="font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);font-weight:600;margin-bottom:12px;">Basic Information</div>
+
+      <div class="form-group">
+        <label class="form-label" for="scheme_name">Name of the Scheme / Project / Endowments / Chairs <span style="color:red;">*</span></label>
+        <input class="form-input" type="text" id="scheme_name" name="scheme_name"
+               placeholder="Enter scheme or project name" required/>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="pi_co_pi">Name of Principal Investigator / Co-Investigator</label>
+          <input class="form-input" type="text" id="pi_co_pi" name="pi_co_pi"
+                 placeholder="Name(s) of PI / Co-PI"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="department">Department</label>
+          <input class="form-input" type="text" id="department" name="department"
+                 placeholder="e.g. Computer Science"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="funding_agency">Name of the Funding Agency</label>
+          <input class="form-input" type="text" id="funding_agency" name="funding_agency"
+                 placeholder="e.g. DST, CSIR, AICTE, UGC"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="project_type">Type</label>
+          <select class="form-select" id="project_type" name="project_type">
+            <option value="">— Select —</option>
+            <option value="Govt.">Govt.</option>
+            <option value="Non-Govt.">Non-Govt.</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-section-title" style="font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);font-weight:600;margin:20px 0 12px;">Financial &amp; Duration</div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="date_of_award">Date of Award</label>
+          <input class="form-input" type="date" id="date_of_award" name="date_of_award"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="amount">Total Fund Granted (INR in Lakhs)</label>
+          <input class="form-input" type="number" id="amount" name="amount"
+                 step="0.01" min="0" placeholder="e.g. 5.50"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="duration_years">Duration of the Project (in Years)</label>
+          <input class="form-input" type="text" id="duration_years" name="duration_years"
+                 placeholder="e.g. 2 or 2.5"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="status">Project Status</label>
+          <select class="form-select" id="status" name="status">
+            <option value="">— Select —</option>
+            <option value="Ongoing">Ongoing</option>
+            <option value="Completed">Completed</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="date_of_completion">Date of Completion</label>
+          <input class="form-input" type="date" id="date_of_completion" name="date_of_completion"/>
+        </div>
+      </div>
+
+      <div class="form-section-title" style="font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);font-weight:600;margin:20px 0 12px;">Details</div>
+
+      <div class="form-group">
+        <label class="form-label" for="objectives">Objectives / Goals</label>
+        <textarea class="form-input" id="objectives" name="objectives" rows="3"
+                  placeholder="Brief objectives or goals of the project"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="collaborating_institutions">Collaborating Institutions / Industry (if any)</label>
+        <input class="form-input" type="text" id="collaborating_institutions" name="collaborating_institutions"
+               placeholder="Leave blank if none"/>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="document_link">Link to the Relevant Document (Sanction Order)</label>
+        <input class="form-input" type="url" id="document_link" name="document_link"
+               placeholder="https://drive.google.com/"/>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Add Project</button>
+        <a href="{{ url_for('my_projects') }}" class="btn btn-ghost">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

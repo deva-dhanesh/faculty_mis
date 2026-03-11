@@ -1,0 +1,132 @@
+{% extends "layouts/faculty_base.html" %}
+{% block title %}Edit FDP Participated{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>Edit FDP Participated</h1>
+    <p>Update the details for this FDP participation record.</p>
+  </div>
+  <div class="page-header-actions">
+    <a href="{{ url_for('my_fdp_programs') }}" class="btn btn-ghost">← FDP Programs</a>
+  </div>
+</div>
+
+<div class="form-card" style="max-width:860px;">
+  <div class="form-card-header">
+    <h2>FDP Participation Details</h2>
+    <p>Modify the fields that need updating.</p>
+  </div>
+  <div class="form-card-body">
+    <form method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+      <div class="form-group">
+        <label class="form-label" for="program_title">
+          Program Title <span style="color:red;">*</span>
+        </label>
+        <input class="form-input" type="text" id="program_title" name="program_title"
+               value="{{ entry.program_title }}" required/>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="duration_days">Duration (No. of Days)</label>
+          <input class="form-input" type="text" id="duration_days" name="duration_days"
+                 value="{{ entry.duration_days or '' }}"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="program_type">Program Type</label>
+          <input class="form-input" type="text" id="program_type" name="program_type"
+                 value="{{ entry.program_type or '' }}"/>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="start_date">Start Date (DD-MM-YYYY)</label>
+          <input class="form-input" type="date" id="start_date" name="start_date"
+                 value="{{ entry.start_date.strftime('%Y-%m-%d') if entry.start_date else '' }}"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="end_date">End Date (DD-MM-YYYY)</label>
+          <input class="form-input" type="date" id="end_date" name="end_date"
+                 value="{{ entry.end_date.strftime('%Y-%m-%d') if entry.end_date else '' }}"/>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="national_international">National / International</label>
+          <select class="form-input" id="national_international" name="national_international">
+            <option value="">— Select —</option>
+            <option value="National" {{ 'selected' if entry.national_international == 'National' }}>National</option>
+            <option value="International" {{ 'selected' if entry.national_international == 'International' }}>International</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="mode">Mode</label>
+          <select class="form-input" id="mode" name="mode">
+            <option value="">— Select —</option>
+            <option value="Online" {{ 'selected' if entry.mode == 'Online' }}>Online</option>
+            <option value="Offline" {{ 'selected' if entry.mode == 'Offline' }}>Offline</option>
+            <option value="Hybrid" {{ 'selected' if entry.mode == 'Hybrid' }}>Hybrid</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="organizing_agency">Organizing / Sponsoring Agency</label>
+        <input class="form-input" type="text" id="organizing_agency" name="organizing_agency"
+               value="{{ entry.organizing_agency or '' }}"/>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="location">Location</label>
+        <input class="form-input" type="text" id="location" name="location"
+               value="{{ entry.location or '' }}"/>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="funding">Funding</label>
+          <select class="form-input" id="funding" name="funding">
+            <option value="">— Select —</option>
+            <option value="Self" {{ 'selected' if entry.funding == 'Self' }}>Self</option>
+            <option value="Institution" {{ 'selected' if entry.funding == 'Institution' }}>Institution</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="enrolled_coursera">Enrolled in Coursera / Online Platform</label>
+          <select class="form-input" id="enrolled_coursera" name="enrolled_coursera">
+            <option value="">— Select —</option>
+            <option value="Yes" {{ 'selected' if entry.enrolled_coursera == 'Yes' }}>Yes</option>
+            <option value="No" {{ 'selected' if entry.enrolled_coursera == 'No' }}>No</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="certificate_link">Certificate Link</label>
+          <input class="form-input" type="url" id="certificate_link" name="certificate_link"
+                 value="{{ entry.certificate_link or '' }}"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="brochure_link">Brochure Link</label>
+          <input class="form-input" type="url" id="brochure_link" name="brochure_link"
+                 value="{{ entry.brochure_link or '' }}"/>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:12px;margin-top:24px;">
+        <button type="submit" class="btn btn-primary">Update FDP</button>
+        <a href="{{ url_for('my_fdp_programs') }}" class="btn btn-ghost">Cancel</a>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+{% endblock %}

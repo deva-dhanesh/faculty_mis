@@ -1,0 +1,110 @@
+{% extends "layouts/faculty_base.html" %}
+{% block title %}Upload Document{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>Upload Document</h1>
+    <p>Upload certificates, letters, and other academic documents.</p>
+  </div>
+  <div class="page-header-actions">
+    <a href="{{ url_for('my_documents') }}" class="btn btn-ghost">← My Documents</a>
+  </div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start;">
+
+  <div class="form-card">
+    <div class="form-card-header">
+      <h2>Select Document</h2>
+      <p>Accepted formats: PDF, DOC, DOCX, JPG, JPEG, PNG, XLSX, XLS</p>
+    </div>
+    <div class="form-card-body">
+      <form method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+        <div class="form-group">
+          <label class="form-label" for="document_type">Document Type <span>*</span></label>
+          <select class="form-select" id="document_type" name="document_type" required>
+            <option value="">Select a type…</option>
+            <option>Appointment Letter</option>
+            <option>Degree Certificate</option>
+            <option>PAN Proof</option>
+            <option>Relieving Letter</option>
+            <option>Research Certificate</option>
+            <option>Other</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="upload-area" for="fileIn">
+            <div class="upload-area-icon">📄</div>
+            <p><strong>Click to browse</strong> or drag and drop</p>
+            <p style="font-size:12px;margin-top:6px;">Max 16 MB</p>
+            <input type="file" id="fileIn" name="file" required
+                   onchange="this.parentElement.nextElementSibling.textContent = this.files[0] ? this.files[0].name : 'No file chosen'"/>
+          </label>
+          <div class="form-hint">No file chosen</div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16,16 12,12 8,16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
+            Upload Document
+          </button>
+          <a href="{{ url_for('faculty_dashboard') }}" class="btn btn-ghost">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><h3>Guidelines</h3></div>
+    <div class="card-body">
+      <ul style="font-size:13px;color:var(--muted);line-height:2;padding-left:18px;">
+        <li>Files are stored securely and only accessible to you and admin.</li>
+        <li>Maximum file size: 16 MB per upload.</li>
+        <li>Accepted formats: PDF, DOC, DOCX, JPG, PNG, XLSX.</li>
+        <li>Use a meaningful document type so it is easy to find later.</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}
+
+<h2>Upload Faculty Document</h2>
+
+<form method="POST" enctype="multipart/form-data">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+Document Type:<br>
+<select name="document_type">
+
+<option>Appointment Letter</option>
+<option>Degree Certificate</option>
+<option>PAN Proof</option>
+<option>Relieving Letter</option>
+<option>Research Certificate</option>
+
+</select>
+
+<br><br>
+
+Select File:<br>
+<input type="file" name="file" required>
+
+<br><br>
+
+<button type="submit">Upload</button>
+
+</form>
+
+<br>
+
+<a href="/faculty_dashboard">Back</a>
+
+</body>
+</html>

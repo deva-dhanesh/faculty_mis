@@ -1,0 +1,106 @@
+{% extends "layouts/faculty_base.html" %}
+{% block title %}Add FDP Organised{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>Add FDP Organised</h1>
+    <p>Record a Faculty Development Programme you organised.</p>
+  </div>
+  <div class="page-header-actions">
+    <a href="{{ url_for('my_fdp_programs') }}" class="btn btn-ghost">← FDP Programs</a>
+  </div>
+</div>
+
+<div class="form-card" style="max-width:860px;">
+  <div class="form-card-header">
+    <h2>FDP Organisation Details</h2>
+    <p>Fill in all available details about the FDP you organised.</p>
+  </div>
+  <div class="form-card-body">
+    <form method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+      <div class="form-group">
+        <label class="form-label" for="title">
+          Title <span style="color:red;">*</span>
+        </label>
+        <input class="form-input" type="text" id="title" name="title"
+               placeholder="e.g. FDP on Advanced Data Analytics" required/>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="department">Department</label>
+          <input class="form-input" type="text" id="department" name="department"
+                 placeholder="e.g. Computer Science"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="faculty_role">Role of the Faculty</label>
+          <input class="form-input" type="text" id="faculty_role" name="faculty_role"
+                 placeholder="e.g. Convener / Coordinator / Organiser"/>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="collaboration">Collaboration</label>
+        <input class="form-input" type="text" id="collaboration" name="collaboration"
+               placeholder="e.g. In collaboration with AICTE"/>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="focus_area">Focus Area</label>
+          <select class="form-input" id="focus_area" name="focus_area">
+            <option value="">— Select —</option>
+            <option value="Research Methodology">Research Methodology</option>
+            <option value="IPR">IPR</option>
+            <option value="Entrepreneurship">Entrepreneurship</option>
+            <option value="Skill Development">Skill Development</option>
+            <option value="IKS">IKS</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="national_international">National / International</label>
+          <select class="form-input" id="national_international" name="national_international">
+            <option value="">— Select —</option>
+            <option value="National">National</option>
+            <option value="International">International</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="num_participants">Number of Participants</label>
+        <input class="form-input" type="number" id="num_participants" name="num_participants"
+               placeholder="e.g. 50" min="0"/>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="date_from">Date From (DD-MM-YYYY)</label>
+          <input class="form-input" type="date" id="date_from" name="date_from"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="date_to">Date To (DD-MM-YYYY)</label>
+          <input class="form-input" type="date" id="date_to" name="date_to"/>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="activity_report_link">Link to Activity Report</label>
+        <input class="form-input" type="url" id="activity_report_link" name="activity_report_link"
+               placeholder="https://..."/>
+      </div>
+
+      <div style="display:flex;gap:12px;margin-top:24px;">
+        <button type="submit" class="btn btn-primary">Save FDP</button>
+        <a href="{{ url_for('my_fdp_programs') }}" class="btn btn-ghost">Cancel</a>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+{% endblock %}

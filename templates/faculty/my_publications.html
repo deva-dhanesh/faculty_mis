@@ -1,0 +1,100 @@
+{% extends "layouts/faculty_base.html" %}
+{% block title %}My Publications{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>My Publications</h1>
+    <p>Your research publications and papers.</p>
+  </div>
+  <div class="page-header-actions">
+    <a href="{{ url_for('bulk_upload_publications') }}" class="btn btn-ghost">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right:5px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      Bulk Upload
+    </a>
+    <a href="{{ url_for('add_publication') }}" class="btn btn-primary">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add Publication
+    </a>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <h3>All Publications</h3>
+    <p>{{ publications|length if publications else 0 }} publication(s)</p>
+  </div>
+  <div class="card-body-flush">
+    {% if publications and publications|length > 0 %}
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Title</th>
+            <th>Author Position</th>
+            <th>Journal</th>
+            <th>Date</th>
+            <th>Type</th>
+            <th>Quartile</th>
+            <th>Indexing</th>
+            <th>DOI</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for pub in publications %}
+          <tr>
+            <td class="text-muted text-sm">{{ loop.index }}</td>
+            <td class="td-bold" style="max-width:220px;word-break:break-word;">{{ pub.title }}</td>
+            <td>{{ pub.author_position or '—' }}</td>
+            <td>{{ pub.journal or '—' }}</td>
+            <td>{{ pub.publication_date.strftime('%d-%b-%Y') if pub.publication_date else '—' }}</td>
+            <td>
+              {% if pub.publication_type %}
+                <span class="badge badge-blue">{{ pub.publication_type }}</span>
+              {% else %}—{% endif %}
+            </td>
+            <td>
+              {% if pub.journal_quartile %}
+                <span class="badge badge-gray">{{ pub.journal_quartile }}</span>
+              {% else %}—{% endif %}
+            </td>
+            <td>
+              {% if pub.indexing %}
+                <span class="badge badge-purple">{{ pub.indexing }}</span>
+              {% else %}—{% endif %}
+            </td>
+            <td>
+              {% if pub.doi %}
+                <a href="https://doi.org/{{ pub.doi }}" target="_blank"
+                   style="color:var(--primary);font-size:12px;">{{ pub.doi }}</a>
+              {% else %}—{% endif %}
+            </td>
+            <td style="white-space:nowrap;">
+              <a href="{{ url_for('edit_publication', pub_id=pub.id) }}" class="btn btn-ghost btn-sm">Edit</a>
+              <form method="POST" action="{{ url_for('delete_publication', pub_id=pub.id) }}" style="display:inline;" onsubmit="return confirm('Delete this publication? This cannot be undone.');">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <button type="submit" class="btn btn-sm" style="color:#e53e3e;border-color:#e53e3e;background:transparent;">Delete</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <div class="empty-state-icon">📚</div>
+      <h3>No publications yet</h3>
+      <p>You haven't added any publications. Click 'Add Publication' to get started.</p>
+      <div style="margin-top:20px;">
+        <a href="{{ url_for('add_publication') }}" class="btn btn-primary btn-sm">Add Publication</a>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

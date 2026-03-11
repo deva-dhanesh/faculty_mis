@@ -1,0 +1,176 @@
+{% extends "layouts/admin_base.html" %}
+{% block title %}Audit Logs{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>Audit Logs</h1>
+    <p>Complete system activity log. All user actions are recorded here.</p>
+  </div>
+  <div class="page-header-actions">
+    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-ghost">← Dashboard</a>
+  </div>
+</div>
+
+<div class="card">
+
+  <!-- Filter Bar -->
+  <form method="GET" action="{{ url_for('view_audit_logs') }}">
+    <div class="filter-bar">
+      <div class="filter-group filter-search">
+        <label>Search</label>
+        <input type="text" name="q" value="{{ q }}" placeholder="Email, action, IP…">
+      </div>
+      <div class="filter-group">
+        <label>Role</label>
+        <select name="role_filter" class="form-select">
+          <option value="">All Roles</option>
+          <option value="admin" {% if role_filter == 'admin' %}selected{% endif %}>Admin</option>
+          <option value="faculty" {% if role_filter == 'faculty' %}selected{% endif %}>Faculty</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Date</label>
+        <input type="date" name="date" value="{{ date }}">
+      </div>
+      <div class="filter-actions">
+        <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+        {% if q or role_filter or date %}
+          <a href="{{ url_for('view_audit_logs') }}" class="btn btn-ghost btn-sm">Clear</a>
+        {% endif %}
+      </div>
+    </div>
+  </form>
+
+  <div class="card-header" style="border-top:none;">
+    <div>
+      <h3>System Activity{% if q or role_filter or date %}&nbsp;<span class="filter-active-badge"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46"/></svg> Filtered</span>{% endif %}</h3>
+      <p class="filter-result-count">{{ logs|length }} log entries (most recent first)</p>
+    </div>
+  </div>
+  <div class="card-body-flush">
+    {% if logs and logs|length > 0 %}
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>User</th>
+            <th>Role</th>
+            <th>Action</th>
+            <th>IP Address</th>
+            <th>Timestamp</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for log in logs %}
+          <tr>
+            <td class="text-muted text-sm">{{ log.id }}</td>
+            <td>
+              <div style="font-weight:600;font-size:13px;">{{ log.user_email or '— pre-auth' }}</div>
+              {% if log.user_id %}<div class="text-muted text-sm">ID: {{ log.user_id }}</div>{% endif %}
+            </td>
+            <td>
+              {% if log.role == 'admin' %}
+                <span class="badge badge-red">Admin</span>
+              {% elif log.role == 'faculty' %}
+                <span class="badge badge-blue">Faculty</span>
+              {% else %}
+                <span class="badge badge-gray">{{ log.role or 'system' }}</span>
+              {% endif %}
+            </td>
+            <td style="max-width:320px;word-break:break-word;">{{ log.action }}</td>
+            <td class="text-muted text-sm">{{ log.ip_address or '—' }}</td>
+            <td class="text-muted text-sm" style="white-space:nowrap;">
+              {{ log.timestamp.strftime("%d %b %Y, %H:%M:%S") if log.timestamp else '—' }}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <div class="empty-state-icon">📝</div>
+      {% if q or role_filter or date %}
+        <h3>No results match your filters</h3>
+        <p>Try adjusting the filters or <a href="{{ url_for('view_audit_logs') }}">clear all</a>.</p>
+      {% else %}
+        <h3>No log entries</h3>
+        <p>No user activity has been recorded yet.</p>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}
+
+<!-- Flash Messages -->
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    {% for message in messages %}
+      <p style="color:green;"><strong>{{ message }}</strong></p>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<br>
+
+<a href="/admin_dashboard">Back to Dashboard</a>
+
+<br><br>
+
+{% if logs and logs|length > 0 %}
+
+<table border="1" cellpadding="8" cellspacing="0">
+
+<tr>
+    <th>Log ID</th>
+    <th>User ID</th>
+    <th>Email</th>
+    <th>Role</th>
+    <th>Action</th>
+    <th>IP Address</th>
+    <th>Timestamp</th>
+</tr>
+
+{% for log in logs %}
+
+<tr>
+
+<td>{{ log.id }}</td>
+
+<td>{{ log.user_id }}</td>
+
+<td>{{ log.user_email }}</td>
+
+<td>{{ log.role }}</td>
+
+<td>{{ log.action }}</td>
+
+<td>{{ log.ip_address }}</td>
+
+<td>
+    {{ log.timestamp.strftime("%d-%m-%Y %H:%M:%S") }}
+</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+{% else %}
+
+<p><strong>No audit logs found.</strong></p>
+
+{% endif %}
+
+<br><br>
+
+<a href="/admin_dashboard">Back to Dashboard</a>
+
+</body>
+</html>

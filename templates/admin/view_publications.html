@@ -1,0 +1,148 @@
+{% extends "layouts/admin_base.html" %}
+{% block title %}Publications{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>Faculty Publications</h1>
+    <p>All research publications submitted by faculty members.</p>
+  </div>
+  <div class="page-header-actions">
+    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-ghost">← Dashboard</a>
+  </div>
+</div>
+
+<div class="card">
+
+  <!-- Filter Bar -->
+  <form method="GET" action="{{ url_for('view_publications') }}">
+    <div class="filter-bar">
+      <div class="filter-group filter-search">
+        <label>Search</label>
+        <input type="text" name="q" value="{{ q }}" placeholder="Title, journal…">
+      </div>
+      <div class="filter-group">
+        <label>Year</label>
+        <select name="year" class="form-select">
+          <option value="">All Years</option>
+          {% for yr in years %}
+            <option value="{{ yr }}" {% if year == yr|string %}selected{% endif %}>{{ yr }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Indexing</label>
+        <select name="indexing" class="form-select">
+          <option value="">All Indexing</option>
+          {% for ix in indexings %}
+            <option value="{{ ix }}" {% if indexing == ix %}selected{% endif %}>{{ ix }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="filter-actions">
+        <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+        {% if q or year or indexing %}
+          <a href="{{ url_for('view_publications') }}" class="btn btn-ghost btn-sm">Clear</a>
+        {% endif %}
+      </div>
+    </div>
+  </form>
+
+  <div class="card-header" style="border-top:none;">
+    <div>
+      <h3>Publications{% if q or year or indexing %}&nbsp;<span class="filter-active-badge"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46"/></svg> Filtered</span>{% endif %}</h3>
+      <p class="filter-result-count">{{ publications|length }} publication(s) found</p>
+    </div>
+  </div>
+  <div class="card-body-flush">
+    {% if publications and publications|length > 0 %}
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Faculty ID</th>
+            <th>Title</th>
+            <th>Author Position</th>
+            <th>Journal</th>
+            <th>Date</th>
+            <th>Type</th>
+            <th>Quartile</th>
+            <th>Impact Factor</th>
+            <th>Indexing</th>
+            <th>DOI</th>
+            <th>Link</th>
+            <th>Added</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for pub in publications %}
+          <tr>
+            <td class="text-muted text-sm">{{ pub.id }}</td>
+            <td><span class="badge badge-blue">{{ pub.user_id }}</span></td>
+            <td class="td-bold" style="max-width:200px;word-break:break-word;">{{ pub.title }}</td>
+            <td>{{ pub.author_position or '—' }}</td>
+            <td>{{ pub.journal or '—' }}</td>
+            <td>{{ pub.publication_date.strftime('%d-%b-%Y') if pub.publication_date else '—' }}</td>
+            <td>
+              {% if pub.publication_type %}
+                <span class="badge badge-blue">{{ pub.publication_type }}</span>
+              {% else %}—{% endif %}
+            </td>
+            <td>
+              {% if pub.journal_quartile %}
+                <span class="badge badge-gray">{{ pub.journal_quartile }}</span>
+              {% else %}—{% endif %}
+            </td>
+            <td>{{ pub.impact_factor or '—' }}</td>
+            <td>
+              {% if pub.indexing %}
+                <span class="badge badge-purple">{{ pub.indexing }}</span>
+              {% else %}—{% endif %}
+            </td>
+            <td>
+              {% if pub.doi %}
+                <a href="https://doi.org/{{ pub.doi }}" target="_blank"
+                   style="color:var(--primary);font-size:12px;">{{ pub.doi }}</a>
+              {% else %}—{% endif %}
+            </td>
+            <td>
+              {% if pub.article_link %}
+                <a href="{{ pub.article_link }}" target="_blank"
+                   class="btn btn-ghost btn-sm">↗ Link</a>
+              {% else %}<span class="text-muted text-sm">None</span>{% endif %}
+            </td>
+            <td class="text-muted text-sm">
+              {{ pub.created_at.strftime("%d %b %Y") if pub.created_at else '—' }}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <div class="empty-state-icon">📚</div>
+      {% if q or year or indexing %}
+        <h3>No results match your filters</h3>
+        <p>Try adjusting the filters or <a href="{{ url_for('view_publications') }}">clear all</a>.</p>
+      {% else %}
+        <h3>No publications found</h3>
+        <p>Faculty members have not added any publications yet.</p>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}
+
+{% endif %}
+
+<br><br>
+
+<a href="/admin_dashboard">Back to Dashboard</a>
+
+</body>
+</html>

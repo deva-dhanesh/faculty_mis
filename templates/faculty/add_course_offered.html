@@ -1,0 +1,146 @@
+{% extends "layouts/faculty_base.html" %}
+{% block title %}Add Course Offered{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>Add Course Offered</h1>
+    <p>Record a value-added course (30+ contact hours) that you have offered to students.</p>
+  </div>
+  <div class="page-header-actions">
+    <a href="{{ url_for('my_courses') }}" class="btn btn-ghost">← Value Added Programs</a>
+  </div>
+</div>
+
+<div class="form-card" style="max-width:900px;">
+  <div class="form-card-header">
+    <h2>Course Offered Details</h2>
+    <p>Fill in all available details about the course you offered.</p>
+  </div>
+  <div class="form-card-body">
+    <form method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+      <!-- Section: Basic Info -->
+      <div class="form-section-title" style="font-size:13px;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:.6px;margin-bottom:14px;border-bottom:1px solid var(--border-color);padding-bottom:6px;">
+        Course Information
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="course_name">
+          Name of the Certificate / Value-Added Course (with 30+ contact hours) <span style="color:red;">*</span>
+        </label>
+        <input class="form-input" type="text" id="course_name" name="course_name"
+               placeholder="e.g. Advanced Python Programming" required/>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="online_course_name">
+          Name of the Online Course &amp; Platform
+          <span class="form-hint">(Coursera, LinkedIn, MOOCs, e-Pathshala, NPTEL, SWAYAM, etc.)</span>
+        </label>
+        <input class="form-input" type="text" id="online_course_name" name="online_course_name"
+               placeholder="e.g. Deep Learning Specialisation — Coursera"/>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="program_name">Program Name</label>
+          <input class="form-input" type="text" id="program_name" name="program_name"
+                 placeholder="e.g. B.Tech CSE"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="department">Department</label>
+          <input class="form-input" type="text" id="department" name="department"
+                 placeholder="e.g. Computer Science"/>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="credits_assigned">
+          Are Credits Assigned?
+          <span class="form-hint">(If yes, specify total credits awarded per course)</span>
+        </label>
+        <input class="form-input" type="text" id="credits_assigned" name="credits_assigned"
+               placeholder="e.g. Yes — 2 Credits  OR  No"/>
+      </div>
+
+      <!-- Section: Schedule -->
+      <div class="form-section-title" style="font-size:13px;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:.6px;margin:20px 0 14px;border-bottom:1px solid var(--border-color);padding-bottom:6px;">
+        Schedule &amp; Delivery
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="date_from">Date of Offering From</label>
+          <input class="form-input" type="date" id="date_from" name="date_from"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="date_to">Date of Offering To</label>
+          <input class="form-input" type="date" id="date_to" name="date_to"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="times_offered">Number of Times Offered (Same Year)</label>
+          <input class="form-input" type="number" id="times_offered" name="times_offered"
+                 placeholder="e.g. 2" min="1"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="contact_hours">Total Contact Hours</label>
+          <input class="form-input" type="number" id="contact_hours" name="contact_hours"
+                 placeholder="e.g. 40" min="0" step="0.5"/>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="mode">
+          Mode of Course
+          <span class="form-hint">(Offered by HEI or Online — specify platform)</span>
+        </label>
+        <input class="form-input" type="text" id="mode" name="mode"
+               placeholder="e.g. Offline — Institution  OR  Online — SWAYAM"/>
+      </div>
+
+      <!-- Section: Links -->
+      <div class="form-section-title" style="font-size:13px;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:.6px;margin:20px 0 14px;border-bottom:1px solid var(--border-color);padding-bottom:6px;">
+        Supporting Links &amp; Documents
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="students_enrolled_link">List of Students Enrolled (with USN)</label>
+          <input class="form-input" type="url" id="students_enrolled_link" name="students_enrolled_link"
+                 placeholder="https://..."/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="students_completing_link">List of Students Completing (with USN &amp; Certificates)</label>
+          <input class="form-input" type="url" id="students_completing_link" name="students_completing_link"
+                 placeholder="https://..."/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="attendance_link">Attendance Link (per contact hour)</label>
+          <input class="form-input" type="url" id="attendance_link" name="attendance_link"
+                 placeholder="https://..."/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="brochure_link">Brochure / Syllabus Link (with Objectives &amp; LOs)</label>
+          <input class="form-input" type="url" id="brochure_link" name="brochure_link"
+                 placeholder="https://..."/>
+        </div>
+        <div class="form-group form-span-2">
+          <label class="form-label" for="certificate_link">Link to Sample Certificate</label>
+          <input class="form-input" type="url" id="certificate_link" name="certificate_link"
+                 placeholder="https://..."/>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:12px;margin-top:24px;">
+        <button type="submit" class="btn btn-primary">Save Course</button>
+        <a href="{{ url_for('my_courses') }}" class="btn btn-ghost">Cancel</a>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+{% endblock %}

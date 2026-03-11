@@ -1,0 +1,112 @@
+{% extends "layouts/faculty_base.html" %}
+{% block title %}My Guest Lectures{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>My Guest Lectures</h1>
+    <p>Track guest lectures and talks you have delivered.</p>
+  </div>
+  <div class="page-header-actions">
+    <a href="{{ url_for('bulk_upload_guest_lectures') }}" class="btn btn-ghost">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right:5px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      Bulk Upload
+    </a>
+    <a href="{{ url_for('add_guest_lecture') }}" class="btn btn-primary">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add Guest Lecture
+    </a>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <h3>All Guest Lectures</h3>
+    <p>{{ lectures|length if lectures else 0 }} record(s)</p>
+  </div>
+  <div class="card-body-flush">
+    {% if lectures and lectures|length > 0 %}
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Lecture Title / Topic</th>
+            <th>Organization &amp; Location</th>
+            <th>Date</th>
+            <th>JAIN/Outside</th>
+            <th>Mode</th>
+            <th>Audience</th>
+            <th>Links</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% set jo_badge = {
+            'JAIN':    'badge-blue',
+            'Outside': 'badge-amber'
+          } %}
+          {% set mode_badge = {
+            'In-person': 'badge-green',
+            'Online':    'badge-purple'
+          } %}
+          {% set aud_badge = {
+            'Students': 'badge-blue',
+            'Faculty':  'badge-green',
+            'Industry': 'badge-amber'
+          } %}
+          {% for l in lectures %}
+          <tr>
+            <td class="text-muted text-sm">{{ loop.index }}</td>
+            <td class="td-bold" style="max-width:240px;word-break:break-word;">{{ l.lecture_title }}</td>
+            <td style="max-width:180px;word-break:break-word;">{{ l.organization_location or '—' }}</td>
+            <td class="text-muted text-sm">{{ l.lecture_date.strftime("%d-%m-%Y") if l.lecture_date else '—' }}</td>
+            <td>
+              {% if l.jain_or_outside %}
+                <span class="badge {{ jo_badge.get(l.jain_or_outside, 'badge-gray') }}">{{ l.jain_or_outside }}</span>
+              {% else %}—{% endif %}
+            </td>
+            <td>
+              {% if l.mode %}
+                <span class="badge {{ mode_badge.get(l.mode, 'badge-gray') }}">{{ l.mode }}</span>
+              {% else %}—{% endif %}
+            </td>
+            <td>
+              {% if l.audience_type %}
+                <span class="badge {{ aud_badge.get(l.audience_type, 'badge-gray') }}">{{ l.audience_type }}</span>
+              {% else %}—{% endif %}
+            </td>
+            <td style="white-space:nowrap;">
+              {% if l.brochure_link %}
+                <a href="{{ l.brochure_link }}" target="_blank" class="btn btn-ghost btn-sm" title="Brochure">🔗</a>
+              {% endif %}
+              {% if l.supporting_doc_link %}
+                <a href="{{ l.supporting_doc_link }}" target="_blank" class="btn btn-ghost btn-sm" title="Supporting Doc">📄</a>
+              {% endif %}
+              {% if not l.brochure_link and not l.supporting_doc_link %}—{% endif %}
+            </td>
+            <td style="white-space:nowrap;">
+              <a href="{{ url_for('edit_guest_lecture', entry_id=l.id) }}" class="btn btn-ghost btn-sm">Edit</a>
+              <form method="POST" action="{{ url_for('delete_guest_lecture', entry_id=l.id) }}" style="display:inline;" onsubmit="return confirm('Delete this guest lecture? This cannot be undone.');">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <button type="submit" class="btn btn-sm" style="color:#e53e3e;border-color:#e53e3e;background:transparent;">Delete</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#CBD5E0" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+      <h3>No guest lectures yet</h3>
+      <p>Add your first guest lecture to get started.</p>
+      <a href="{{ url_for('add_guest_lecture') }}" class="btn btn-primary" style="margin-top:12px;">Add Guest Lecture</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

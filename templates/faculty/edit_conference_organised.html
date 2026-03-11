@@ -1,0 +1,126 @@
+{% extends "layouts/faculty_base.html" %}
+{% block title %}Edit Conference Organised{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>Edit Conference Organised</h1>
+    <p>Update the details for this conference organisation record.</p>
+  </div>
+  <div class="page-header-actions">
+    <a href="{{ url_for('my_conferences') }}" class="btn btn-ghost">← Conferences</a>
+  </div>
+</div>
+
+<div class="form-card" style="max-width:860px;">
+  <div class="form-card-header">
+    <h2>Conference Organisation Details</h2>
+    <p>Modify the fields that need updating.</p>
+  </div>
+  <div class="form-card-body">
+    <form method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+      <div class="form-group">
+        <label class="form-label" for="title">
+          Title <span style="color:red;">*</span>
+        </label>
+        <input class="form-input" type="text" id="title" name="title"
+               value="{{ entry.title }}" required/>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="department">Department</label>
+          <input class="form-input" type="text" id="department" name="department"
+                 value="{{ entry.department or '' }}"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="faculty_role">Role of the Faculty</label>
+          <input class="form-input" type="text" id="faculty_role" name="faculty_role"
+                 value="{{ entry.faculty_role or '' }}"/>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="collaboration">Collaboration</label>
+        <input class="form-input" type="text" id="collaboration" name="collaboration"
+               value="{{ entry.collaboration or '' }}"/>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="focus_area">Focus Area</label>
+          <select class="form-input" id="focus_area" name="focus_area">
+            <option value="">— Select —</option>
+            {% for opt in ["Research Methodology", "IPR", "Entrepreneurship", "Skill Development", "IKS"] %}
+              <option value="{{ opt }}" {{ 'selected' if entry.focus_area == opt }}>{{ opt }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="national_international">National / International</label>
+          <select class="form-input" id="national_international" name="national_international">
+            <option value="">— Select —</option>
+            <option value="National" {{ 'selected' if entry.national_international == 'National' }}>National</option>
+            <option value="International" {{ 'selected' if entry.national_international == 'International' }}>International</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="num_participants">Number of Participants</label>
+        <input class="form-input" type="number" id="num_participants" name="num_participants"
+               value="{{ entry.num_participants if entry.num_participants is not none else '' }}" min="0"/>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="date_from">Date From (DD-MM-YYYY)</label>
+          <input class="form-input" type="date" id="date_from" name="date_from"
+                 value="{{ entry.date_from.strftime('%Y-%m-%d') if entry.date_from else '' }}"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="date_to">Date To (DD-MM-YYYY)</label>
+          <input class="form-input" type="date" id="date_to" name="date_to"
+                 value="{{ entry.date_to.strftime('%Y-%m-%d') if entry.date_to else '' }}"/>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="proceedings_indexed">Conference Proceedings Indexed</label>
+          <select class="form-input" id="proceedings_indexed" name="proceedings_indexed">
+            <option value="">— Select —</option>
+            <option value="Yes" {{ 'selected' if entry.proceedings_indexed == 'Yes' }}>Yes</option>
+            <option value="No" {{ 'selected' if entry.proceedings_indexed == 'No' }}>No</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="indexing_details">
+          Indexing Details
+          <span class="form-hint">(Scopus/WoS indexed; ISSN/ISBN No., if applicable)</span>
+        </label>
+        <input class="form-input" type="text" id="indexing_details" name="indexing_details"
+               value="{{ entry.indexing_details or '' }}"/>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="activity_report_link">Link to Activity Report with Complete Details</label>
+        <input class="form-input" type="url" id="activity_report_link" name="activity_report_link"
+               value="{{ entry.activity_report_link or '' }}"/>
+      </div>
+
+      <div style="display:flex;gap:12px;margin-top:24px;">
+        <button type="submit" class="btn btn-primary">Update Conference</button>
+        <a href="{{ url_for('my_conferences') }}" class="btn btn-ghost">Cancel</a>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+{% endblock %}

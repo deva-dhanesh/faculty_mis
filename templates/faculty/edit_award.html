@@ -1,0 +1,110 @@
+{% extends "layouts/faculty_base.html" %}
+{% block title %}Edit Award{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>Edit Award / Achievement</h1>
+    <p>Update details for this honour.</p>
+  </div>
+  <div class="page-header-actions">
+    <a href="{{ url_for('my_awards') }}" class="btn btn-ghost">← Back to My Awards</a>
+  </div>
+</div>
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% for category, message in messages %}
+    <div class="alert alert-{{ category }}" style="margin-bottom:16px;">{{ message }}</div>
+  {% endfor %}
+{% endwith %}
+
+<div class="form-card" style="max-width:860px;">
+  <div class="form-card-header">
+    <h2>Award Details</h2>
+  </div>
+  <div class="form-card-body">
+    <form method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+      <div class="form-section-title" style="font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);font-weight:600;margin-bottom:12px;">Basic Information</div>
+
+      <div class="form-group">
+        <label class="form-label" for="title">Title of the Innovation / Academic Achievement <span style="color:red;">*</span></label>
+        <input class="form-input" type="text" id="title" name="title"
+               value="{{ award.title }}" required/>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="nature_of_award">Nature of Award</label>
+          <select class="form-select" id="nature_of_award" name="nature_of_award">
+            <option value="">— Select —</option>
+            {% for opt in ['Academic','Research','Innovations','Sports','Cultural','Alumni','Women Cell'] %}
+              <option {% if award.nature_of_award == opt %}selected{% endif %}>{{ opt }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="event_level">Event Level</label>
+          <select class="form-select" id="event_level" name="event_level">
+            <option value="">— Select —</option>
+            {% for opt in ['Local','State','National','International'] %}
+              <option {% if award.event_level == opt %}selected{% endif %}>{{ opt }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="date_of_award">Date of Award</label>
+          <input class="form-input" type="date" id="date_of_award" name="date_of_award"
+                 value="{{ award.date_of_award.strftime('%Y-%m-%d') if award.date_of_award else '' }}"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="category">Category</label>
+          <select class="form-select" id="category" name="category">
+            <option value="">— Select —</option>
+            {% for opt in ['Department','Teachers','Research Scholars'] %}
+              <option {% if award.category == opt %}selected{% endif %}>{{ opt }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="awarding_agency">Name of the Awarding Agency</label>
+          <input class="form-input" type="text" id="awarding_agency" name="awarding_agency"
+                 value="{{ award.awarding_agency or '' }}"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="award_amount">Award Amount (if any)</label>
+          <input class="form-input" type="text" id="award_amount" name="award_amount"
+                 value="{{ award.award_amount or '' }}"/>
+        </div>
+      </div>
+
+      <div class="form-section-title" style="font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);font-weight:600;margin:20px 0 12px;">Additional Details</div>
+
+      <div class="form-group">
+        <label class="form-label" for="research_area">Project / Research Area</label>
+        <input class="form-input" type="text" id="research_area" name="research_area"
+               value="{{ award.research_area or '' }}"/>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="collaborators">Collaborators (if any)</label>
+        <input class="form-input" type="text" id="collaborators" name="collaborators"
+               value="{{ award.collaborators or '' }}"/>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="document_link">Link to Relevant Documents (Award Certificate / Weblink)</label>
+        <input class="form-input" type="url" id="document_link" name="document_link"
+               value="{{ award.document_link or '' }}" placeholder="https://..."/>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <a href="{{ url_for('my_awards') }}" class="btn btn-ghost">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

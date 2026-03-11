@@ -1,0 +1,126 @@
+{% extends "layouts/faculty_base.html" %}
+{% block title %}Edit Research Project{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>Edit Research Project</h1>
+    <p>Update the details of your research project.</p>
+  </div>
+  <div class="page-header-actions">
+    <a href="{{ url_for('my_projects') }}" class="btn btn-ghost">← My Projects</a>
+  </div>
+</div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% for category, message in messages %}
+    <div class="alert alert-{{ category }}" style="margin-bottom:16px;">{{ message }}</div>
+  {% endfor %}
+{% endwith %}
+
+<div class="form-card" style="max-width:860px;">
+  <div class="form-card-header">
+    <h2>Project Details</h2>
+  </div>
+  <div class="form-card-body">
+    <form method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+      <div class="form-section-title" style="font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);font-weight:600;margin-bottom:12px;">Basic Information</div>
+
+      <div class="form-group">
+        <label class="form-label" for="scheme_name">Name of the Scheme / Project / Endowments / Chairs <span style="color:red;">*</span></label>
+        <input class="form-input" type="text" id="scheme_name" name="scheme_name"
+               value="{{ project.scheme_name }}" required/>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="pi_co_pi">Name of Principal Investigator / Co-Investigator</label>
+          <input class="form-input" type="text" id="pi_co_pi" name="pi_co_pi"
+                 value="{{ project.pi_co_pi or '' }}"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="department">Department</label>
+          <input class="form-input" type="text" id="department" name="department"
+                 value="{{ project.department or '' }}"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="funding_agency">Name of the Funding Agency</label>
+          <input class="form-input" type="text" id="funding_agency" name="funding_agency"
+                 value="{{ project.funding_agency or '' }}"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="project_type">Type</label>
+          <select class="form-select" id="project_type" name="project_type">
+            <option value="">— Select —</option>
+            {% for pt in ['Govt.', 'Non-Govt.'] %}
+              <option value="{{ pt }}" {% if project.project_type == pt %}selected{% endif %}>{{ pt }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <div class="form-section-title" style="font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);font-weight:600;margin:20px 0 12px;">Financial &amp; Duration</div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="date_of_award">Date of Award</label>
+          <input class="form-input" type="date" id="date_of_award" name="date_of_award"
+                 value="{{ project.date_of_award.strftime('%Y-%m-%d') if project.date_of_award else '' }}"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="amount">Total Fund Granted (INR in Lakhs)</label>
+          <input class="form-input" type="number" id="amount" name="amount"
+                 value="{{ project.amount if project.amount is not none else '' }}" step="0.01" min="0"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="duration_years">Duration of the Project (in Years)</label>
+          <input class="form-input" type="text" id="duration_years" name="duration_years"
+                 value="{{ project.duration_years or '' }}"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="status">Project Status</label>
+          <select class="form-select" id="status" name="status">
+            <option value="">— Select —</option>
+            {% for st in ['Ongoing', 'Completed'] %}
+              <option value="{{ st }}" {% if project.status == st %}selected{% endif %}>{{ st }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="date_of_completion">Date of Completion</label>
+          <input class="form-input" type="date" id="date_of_completion" name="date_of_completion"
+                 value="{{ project.date_of_completion.strftime('%Y-%m-%d') if project.date_of_completion else '' }}"/>
+        </div>
+      </div>
+
+      <div class="form-section-title" style="font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);font-weight:600;margin:20px 0 12px;">Details</div>
+
+      <div class="form-group">
+        <label class="form-label" for="objectives">Objectives / Goals</label>
+        <textarea class="form-input" id="objectives" name="objectives" rows="3">{{ project.objectives or '' }}</textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="collaborating_institutions">Collaborating Institutions / Industry (if any)</label>
+        <input class="form-input" type="text" id="collaborating_institutions" name="collaborating_institutions"
+               value="{{ project.collaborating_institutions or '' }}"/>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="document_link">Link to the Relevant Document (Sanction Order)</label>
+        <input class="form-input" type="url" id="document_link" name="document_link"
+               value="{{ project.document_link or '' }}" placeholder="https://…"/>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <a href="{{ url_for('my_projects') }}" class="btn btn-ghost">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

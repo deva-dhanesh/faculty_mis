@@ -1,0 +1,238 @@
+{% extends "layouts/faculty_base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>Faculty Dashboard</h1>
+    <p>Welcome, {{ session.get('user_email') }} — manage your academic records here.</p>
+  </div>
+  <div class="page-header-actions">
+    <a href="{{ url_for('view_my_report') }}" class="btn btn-ghost" target="_blank">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      View Report
+    </a>
+    <a href="{{ url_for('my_report') }}" class="btn btn-ghost">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Download My Report
+    </a>
+  </div>
+</div>
+
+<!-- Quick action grid -->
+<div class="quick-grid">
+
+  <div class="quick-card">
+    <div class="quick-card-header">
+      <div class="quick-card-icon" style="background:#dcfce7;color:#16a34a;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </div>
+      <div>
+        <div class="quick-card-title">My Profile</div>
+        <div class="quick-card-subtitle">View and update your academic profile</div>
+      </div>
+    </div>
+    <div class="quick-card-body">
+      <a href="{{ url_for('faculty_profile') }}" class="btn btn-success btn-sm">View / Edit Profile</a>
+    </div>
+  </div>
+
+  <div class="quick-card">
+    <div class="quick-card-header">
+      <div class="quick-card-icon" style="background:var(--info-bg);color:var(--info);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+      </div>
+      <div>
+        <div class="quick-card-title">Documents</div>
+        <div class="quick-card-subtitle">Upload and view your documents</div>
+      </div>
+    </div>
+    <div class="quick-card-body">
+      <a href="{{ url_for('upload_document') }}" class="btn btn-primary btn-sm">Upload Document</a>
+      <a href="{{ url_for('my_documents') }}" class="btn btn-ghost btn-sm">View My Documents</a>
+    </div>
+  </div>
+
+  <div class="quick-card">
+    <div class="quick-card-header">
+      <div class="quick-card-icon" style="background:#ede9fe;color:#7c3aed;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      </div>
+      <div>
+        <div class="quick-card-title">Publications</div>
+        <div class="quick-card-subtitle">Manage your research publications</div>
+      </div>
+    </div>
+    <div class="quick-card-body">
+      <a href="{{ url_for('add_publication') }}" class="btn btn-primary btn-sm">Add Publication</a>
+      <a href="{{ url_for('my_publications') }}" class="btn btn-ghost btn-sm">View Publications</a>
+    </div>
+  </div>
+
+  <div class="quick-card">
+    <div class="quick-card-header">
+      <div class="quick-card-icon" style="background:var(--warning-bg);color:var(--warning);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22,4 12,14.01 9,11.01"/></svg>
+      </div>
+      <div>
+        <div class="quick-card-title">Research Projects</div>
+        <div class="quick-card-subtitle">Track your funded and ongoing projects</div>
+      </div>
+    </div>
+    <div class="quick-card-body">
+      <a href="{{ url_for('add_project') }}" class="btn btn-primary btn-sm">Add Project</a>
+      <a href="{{ url_for('my_projects') }}" class="btn btn-ghost btn-sm">View My Projects</a>
+    </div>
+  </div>
+
+  <div class="quick-card">
+    <div class="quick-card-header">
+      <div class="quick-card-icon" style="background:#e0e7ff;color:#4f46e5;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      </div>
+      <div>
+        <div class="quick-card-title">Books &amp; Chapters</div>
+        <div class="quick-card-subtitle">Published books and book chapters</div>
+      </div>
+    </div>
+    <div class="quick-card-body">
+      <a href="{{ url_for('add_book_chapter') }}" class="btn btn-primary btn-sm">Add Book / Chapter</a>
+      <a href="{{ url_for('my_book_chapters') }}" class="btn btn-ghost btn-sm">View All</a>
+    </div>
+  </div>
+
+  <div class="quick-card">
+    <div class="quick-card-header">
+      <div class="quick-card-icon" style="background:#fce7f3;color:#db2777;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+      </div>
+      <div>
+        <div class="quick-card-title">Guest Lectures</div>
+        <div class="quick-card-subtitle">Talks &amp; lectures delivered</div>
+      </div>
+    </div>
+    <div class="quick-card-body">
+      <a href="{{ url_for('add_guest_lecture') }}" class="btn btn-primary btn-sm">Add Guest Lecture</a>
+      <a href="{{ url_for('my_guest_lectures') }}" class="btn btn-ghost btn-sm">View All</a>
+    </div>
+  </div>
+
+  <div class="quick-card">
+    <div class="quick-card-header">
+      <div class="quick-card-icon" style="background:#dbeafe;color:#2563eb;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2z"/></svg>
+      </div>
+      <div>
+        <div class="quick-card-title">Patents / IP</div>
+        <div class="quick-card-subtitle">Patents, copyrights, trademarks &amp; more</div>
+      </div>
+    </div>
+    <div class="quick-card-body">
+      <a href="{{ url_for('add_patent') }}" class="btn btn-primary btn-sm">Add Patent / IP</a>
+      <a href="{{ url_for('my_patents') }}" class="btn btn-ghost btn-sm">View All</a>
+    </div>
+  </div>
+
+  <div class="quick-card">
+    <div class="quick-card-header">
+      <div class="quick-card-icon" style="background:#fef3c7;color:#d97706;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      </div>
+      <div>
+        <div class="quick-card-title">Fellowships</div>
+        <div class="quick-card-subtitle">Awards, grants &amp; fellowships</div>
+      </div>
+    </div>
+    <div class="quick-card-body">
+      <a href="{{ url_for('add_fellowship') }}" class="btn btn-primary btn-sm">Add Fellowship</a>
+      <a href="{{ url_for('my_fellowships') }}" class="btn btn-ghost btn-sm">View All</a>
+    </div>
+  </div>
+
+  <div class="quick-card">
+    <div class="quick-card-header">
+      <div class="quick-card-icon" style="background:#fef9c3;color:#ca8a04;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+      </div>
+      <div>
+        <div class="quick-card-title">Value Added Programs</div>
+        <div class="quick-card-subtitle">Courses attended &amp; courses offered</div>
+      </div>
+    </div>
+    <div class="quick-card-body">
+      <a href="{{ url_for('add_course_attended') }}" class="btn btn-primary btn-sm">Add Attended</a>
+      <a href="{{ url_for('add_course_offered') }}" class="btn btn-primary btn-sm">Add Offered</a>
+      <a href="{{ url_for('my_courses') }}" class="btn btn-ghost btn-sm">View All</a>
+    </div>
+  </div>
+
+  <div class="quick-card">
+    <div class="quick-card-header">
+      <div class="quick-card-icon" style="background:#e0e7ff;color:#4338ca;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <div>
+        <div class="quick-card-title">Conferences</div>
+        <div class="quick-card-subtitle">Conferences participated &amp; organised</div>
+      </div>
+    </div>
+    <div class="quick-card-body">
+      <a href="{{ url_for('add_conference_participated') }}" class="btn btn-primary btn-sm">Add Participated</a>
+      <a href="{{ url_for('add_conference_organised') }}" class="btn btn-primary btn-sm">Add Organised</a>
+      <a href="{{ url_for('my_conferences') }}" class="btn btn-ghost btn-sm">View All</a>
+    </div>
+  </div>
+
+  <div class="quick-card">
+    <div class="quick-card-header">
+      <div class="quick-card-icon" style="background:#fce7f3;color:#db2777;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      </div>
+      <div>
+        <div class="quick-card-title">FDP Programs</div>
+        <div class="quick-card-subtitle">FDPs participated &amp; organised</div>
+      </div>
+    </div>
+    <div class="quick-card-body">
+      <a href="{{ url_for('add_fdp_participated') }}" class="btn btn-primary btn-sm">Add Participated</a>
+      <a href="{{ url_for('add_fdp_organised') }}" class="btn btn-primary btn-sm">Add Organised</a>
+      <a href="{{ url_for('my_fdp_programs') }}" class="btn btn-ghost btn-sm">View All</a>
+    </div>
+  </div>
+
+  <div class="quick-card">
+    <div class="quick-card-header">
+      <div class="quick-card-icon" style="background:#fef3c7;color:#d97706;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      </div>
+      <div>
+        <div class="quick-card-title">Awards</div>
+        <div class="quick-card-subtitle">Academic, research &amp; other honours</div>
+      </div>
+    </div>
+    <div class="quick-card-body">
+      <a href="{{ url_for('add_award') }}" class="btn btn-primary btn-sm">Add Award</a>
+      <a href="{{ url_for('my_awards') }}" class="btn btn-ghost btn-sm">My Awards</a>
+    </div>
+  </div>
+
+  <div class="quick-card">
+    <div class="quick-card-header">
+      <div class="quick-card-icon" style="background:var(--success-bg);color:var(--success);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      </div>
+      <div>
+        <div class="quick-card-title">Reports</div>
+        <div class="quick-card-subtitle">Download your personal faculty report</div>
+      </div>
+    </div>
+    <div class="quick-card-body">
+      <a href="{{ url_for('view_my_report') }}" class="btn btn-primary btn-sm" target="_blank">View Report</a>
+      <a href="{{ url_for('my_report') }}" class="btn btn-success btn-sm">Download PDF Report</a>
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}

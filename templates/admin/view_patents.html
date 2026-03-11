@@ -1,0 +1,100 @@
+{% extends "layouts/admin_base.html" %}
+{% block title %}View Patents / IP{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>Patents / IP</h1>
+    <p>All faculty patents, copyrights, trademarks, GIs and design registrations.</p>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <h3>All Patents / IP</h3>
+    <p>{{ patents|length if patents else 0 }} record(s)</p>
+  </div>
+  <div class="card-body-flush">
+    {% if patents and patents|length > 0 %}
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Faculty</th>
+            <th>Application No.</th>
+            <th>Type</th>
+            <th>Title of Invention / Work</th>
+            <th>Status</th>
+            <th>Filing Date</th>
+            <th>Published</th>
+            <th>Grant Date</th>
+            <th>Agency</th>
+            <th>Nat/Int</th>
+            <th>Doc</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% set type_badge = {
+            'Patent':               'badge-blue',
+            'Copyright':            'badge-purple',
+            'Trademark':            'badge-amber',
+            'GI':                   'badge-green',
+            'Design Registration':  'badge-gray'
+          } %}
+          {% set status_badge = {
+            'Filed':     'badge-amber',
+            'Published': 'badge-blue',
+            'Awarded':   'badge-green'
+          } %}
+          {% set ni_badge = {
+            'National':      'badge-blue',
+            'International': 'badge-purple'
+          } %}
+          {% for p in patents %}
+          <tr>
+            <td class="text-muted text-sm">{{ loop.index }}</td>
+            <td><span class="badge badge-gray" style="font-size:11px;">{{ p.user_id }}</span></td>
+            <td class="text-sm" style="white-space:nowrap;">{{ p.application_number or '—' }}</td>
+            <td>
+              {% if p.ip_type %}
+                <span class="badge {{ type_badge.get(p.ip_type, 'badge-gray') }}">{{ p.ip_type }}</span>
+              {% else %}—{% endif %}
+            </td>
+            <td class="td-bold" style="max-width:200px;word-break:break-word;">{{ p.title }}</td>
+            <td>
+              {% if p.status %}
+                <span class="badge {{ status_badge.get(p.status, 'badge-gray') }}">{{ p.status }}</span>
+              {% else %}—{% endif %}
+            </td>
+            <td class="text-muted text-sm">{{ p.filing_date.strftime("%d-%b-%Y") if p.filing_date else '—' }}</td>
+            <td class="text-muted text-sm">{{ p.published_date.strftime("%d-%b-%Y") if p.published_date else '—' }}</td>
+            <td class="text-muted text-sm">{{ p.grant_date.strftime("%d-%b-%Y") if p.grant_date else '—' }}</td>
+            <td class="text-sm" style="max-width:140px;word-break:break-word;">{{ p.awarding_agency or '—' }}</td>
+            <td>
+              {% if p.national_international %}
+                <span class="badge {{ ni_badge.get(p.national_international, 'badge-gray') }}">{{ p.national_international }}</span>
+              {% else %}—{% endif %}
+            </td>
+            <td>
+              {% if p.supporting_doc_link %}
+                <a href="{{ p.supporting_doc_link }}" target="_blank" class="btn btn-ghost btn-sm" title="Supporting Doc">📄</a>
+              {% else %}—{% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#CBD5E0" stroke-width="1.5"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2z"/></svg>
+      <h3>No patent / IP records found</h3>
+      <p>No faculty patent or IP records have been recorded yet.</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,121 @@
+{% extends "layouts/faculty_base.html" %}
+{% block title %}Add Patent / IP{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>Add Patent / IP</h1>
+    <p>Record a new patent, copyright, trademark, GI or design registration.</p>
+  </div>
+  <div class="page-header-actions">
+    <a href="{{ url_for('my_patents') }}" class="btn btn-ghost">← Back to My Patents</a>
+  </div>
+</div>
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% for category, message in messages %}
+    <div class="alert alert-{{ category }}" style="margin-bottom:16px;">{{ message }}</div>
+  {% endfor %}
+{% endwith %}
+
+<div class="form-card" style="max-width:900px;">
+  <div class="form-card-header">
+    <h2>Patent / IP Details</h2>
+  </div>
+  <div class="form-card-body">
+    <form method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="application_number">Patent / Application Number</label>
+          <input class="form-input" type="text" id="application_number" name="application_number"
+                 placeholder="e.g. IN202341012345"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="ip_type">Type</label>
+          <select class="form-select" id="ip_type" name="ip_type">
+            <option value="">— Select —</option>
+            <option>Patent</option>
+            <option>Copyright</option>
+            <option>Trademark</option>
+            <option>GI</option>
+            <option>Design Registration</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="title">Title of Invention / Work <span style="color:red;">*</span></label>
+        <input class="form-input" type="text" id="title" name="title"
+               placeholder="e.g. AI-based Diagnostic System for Early Cancer Detection" required/>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="status">Status</label>
+          <select class="form-select" id="status" name="status">
+            <option value="">— Select —</option>
+            <option>Filed</option>
+            <option>Published</option>
+            <option>Awarded</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="national_international">National / International</label>
+          <select class="form-select" id="national_international" name="national_international">
+            <option value="">— Select —</option>
+            <option>National</option>
+            <option>International</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="filing_date">Filing Date</label>
+          <input class="form-input" type="date" id="filing_date" name="filing_date"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="published_date">Published Date</label>
+          <input class="form-input" type="date" id="published_date" name="published_date"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="grant_date">Grant Date</label>
+          <input class="form-input" type="date" id="grant_date" name="grant_date"/>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="awarding_agency">Awarding Agency</label>
+        <input class="form-input" type="text" id="awarding_agency" name="awarding_agency"
+               placeholder="e.g. Indian Patent Office"/>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="commercialization_details">Commercialization Details (if applicable)</label>
+        <textarea class="form-input" id="commercialization_details" name="commercialization_details"
+                  rows="3" placeholder="Details about commercialization of this IP..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="oer_contribution">Contribution to OER (Open Educational Resources)</label>
+        <textarea class="form-input" id="oer_contribution" name="oer_contribution"
+                  rows="3" placeholder="Contribution details..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="supporting_doc_link">Link to Supporting Document (Award / Published / Filed Certificates)</label>
+        <input class="form-input" type="url" id="supporting_doc_link" name="supporting_doc_link"
+               placeholder="https://drive.google.com/..."/>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Add Patent / IP</button>
+        <a href="{{ url_for('my_patents') }}" class="btn btn-ghost">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

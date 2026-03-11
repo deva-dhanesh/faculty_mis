@@ -1,0 +1,21 @@
+# Environment secrets — NEVER commit this
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+venv/
+.venv/
+
+# Uploads & exports (runtime data)
+uploads/
+exports/
+
+# Database
+*.sqlite3
+*.db
+
+# OS
+.DS_Store
+Thumbs.db

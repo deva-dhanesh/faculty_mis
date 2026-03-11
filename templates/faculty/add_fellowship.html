@@ -1,0 +1,115 @@
+{% extends "layouts/faculty_base.html" %}
+{% block title %}Add Fellowship{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>Add Fellowship</h1>
+    <p>Record a new award or fellowship you have received.</p>
+  </div>
+  <div class="page-header-actions">
+    <a href="{{ url_for('my_fellowships') }}" class="btn btn-ghost">← Back to My Fellowships</a>
+  </div>
+</div>
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% for category, message in messages %}
+    <div class="alert alert-{{ category }}" style="margin-bottom:16px;">{{ message }}</div>
+  {% endfor %}
+{% endwith %}
+
+<div class="form-card" style="max-width:900px;">
+  <div class="form-card-header">
+    <h2>Fellowship Details</h2>
+  </div>
+  <div class="form-card-body">
+    <form method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+      <div class="form-group">
+        <label class="form-label" for="award_name">Name of the Award / Fellowship <span style="color:red;">*</span></label>
+        <input class="form-input" type="text" id="award_name" name="award_name"
+               placeholder="e.g. UGC Junior Research Fellowship" required/>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="financial_support">Financial Support (INR)</label>
+          <input class="form-input" type="text" id="financial_support" name="financial_support"
+                 placeholder="e.g. 5,00,000"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="support_type">Type of Support</label>
+          <input class="form-input" type="text" id="support_type" name="support_type"
+                 placeholder="e.g. Research Grant, Travel Grant"/>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="grant_purpose">Purpose of the Grant</label>
+        <input class="form-input" type="text" id="grant_purpose" name="grant_purpose"
+               placeholder="e.g. Doctoral research in Machine Learning"/>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="national_international">National / International Fellowship</label>
+          <select class="form-select" id="national_international" name="national_international">
+            <option value="">— Select —</option>
+            <option>National</option>
+            <option>International</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="award_date">Date of Award (DD-MM-YYYY)</label>
+          <input class="form-input" type="date" id="award_date" name="award_date"/>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="awarding_agency">Name of Awarding Agency</label>
+          <input class="form-input" type="text" id="awarding_agency" name="awarding_agency"
+                 placeholder="e.g. University Grants Commission"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="duration">Duration of Fellowship</label>
+          <input class="form-input" type="text" id="duration" name="duration"
+                 placeholder="e.g. 2 Years"/>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="research_topic">Research Topic / Area</label>
+        <input class="form-input" type="text" id="research_topic" name="research_topic"
+               placeholder="e.g. Natural Language Processing"/>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="location">Location of Study / Research</label>
+          <input class="form-input" type="text" id="location" name="location"
+                 placeholder="e.g. IISc Bangalore"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="collaborating_institution">Collaborating Institution / Partner</label>
+          <input class="form-input" type="text" id="collaborating_institution" name="collaborating_institution"
+                 placeholder="e.g. MIT, USA"/>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="grant_letter_link">Link to Grant Letter</label>
+        <input class="form-input" type="url" id="grant_letter_link" name="grant_letter_link"
+               placeholder="https://drive.google.com/..."/>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Add Fellowship</button>
+        <a href="{{ url_for('my_fellowships') }}" class="btn btn-ghost">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

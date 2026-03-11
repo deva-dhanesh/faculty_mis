@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Sign In{% endblock %}
+
+{% block body %}
+<div class="auth-page">
+
+  <div class="auth-left">
+    <div class="auth-brand">
+      <div class="auth-brand-icon"><img src="{{ url_for('static', filename='img/jgi.png') }}" alt="Logo"></div>
+      <span>Faculty MIS</span>
+    </div>
+    <h1>University Faculty<br>Management System</h1>
+    <p>A secure, centralised platform for managing faculty records, research publications, projects, and institutional documents.</p>
+    <ul class="auth-features">
+      <li>Faculty profile &amp; document management</li>
+      <li>Research publication tracking</li>
+      <li>Analytics &amp; downloadable reports</li>
+      <li>Two-factor authentication (OTP)</li>
+    </ul>
+  </div>
+
+  <div class="auth-right">
+    <div class="auth-form-box">
+      <div style="display:flex;justify-content:center;align-items:center;width:100%;margin-bottom:20px;">
+        <img src="{{ url_for('static', filename='img/jain.png') }}" alt="Logo" style="height:72px;width:auto;object-fit:contain;display:block;">
+      </div>
+      <h2>Welcome back</h2>
+      <p class="auth-sub">Sign in to your account to continue</p>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}{% for cat, msg in messages %}
+          <div class="alert {{ cat }}">{{ msg }}</div>
+        {% endfor %}{% endif %}
+      {% endwith %}
+
+      <form method="POST" action="{{ url_for('login') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+        <div class="form-group">
+          <label class="form-label" for="email">Email address</label>
+          <input class="form-input" type="email" id="email" name="email"
+                 placeholder="Enter your email" required autocomplete="email"/>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="password">Password</label>
+          <input class="form-input" type="password" id="password" name="password"
+                 placeholder="Enter your password" required autocomplete="current-password"/>
+        </div>
+
+        <div style="text-align:right;margin-bottom:20px;">
+          <a href="{{ url_for('forgot_password') }}" style="font-size:13px;color:#2563eb;">Forgot password?</a>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;font-size:15px;padding:13px;">
+          Sign in &nbsp;→
+        </button>
+      </form>
+
+      <p style="text-align:center;font-size:12px;color:#64748b;margin-top:24px;">
+        By signing in you agree to the university's IT acceptable use policy.
+      </p>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

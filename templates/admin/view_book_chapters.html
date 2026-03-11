@@ -1,0 +1,110 @@
+{% extends "layouts/admin_base.html" %}
+{% block title %}View Book Chapters{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>Books &amp; Chapters</h1>
+    <p>All faculty book and chapter publications across the institution.</p>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <h3>All Books &amp; Chapters</h3>
+    <p>{{ chapters|length if chapters else 0 }} record(s)</p>
+  </div>
+  <div class="card-body-flush">
+    {% if chapters and chapters|length > 0 %}
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Faculty</th>
+            <th>Book Title</th>
+            <th>Chapter Title</th>
+            <th>Type</th>
+            <th>Int/Ext</th>
+            <th>Scope</th>
+            <th>Date</th>
+            <th>ISBN</th>
+            <th>Publisher</th>
+            <th>Co-authors</th>
+            <th>DOI</th>
+            <th>Indexed In</th>
+            <th>Links</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% set type_badge = {
+            'Book':    'badge-blue',
+            'Chapter': 'badge-purple'
+          } %}
+          {% set ie_badge = {
+            'Internal': 'badge-gray',
+            'External': 'badge-amber'
+          } %}
+          {% set scope_badge = {
+            'National':      'badge-amber',
+            'International': 'badge-green'
+          } %}
+          {% for c in chapters %}
+          <tr>
+            <td class="text-muted text-sm">{{ loop.index }}</td>
+            <td>
+              <span class="badge badge-gray" style="font-size:11px;">{{ c.user_id }}</span>
+            </td>
+            <td class="td-bold" style="max-width:200px;word-break:break-word;">{{ c.book_title or '—' }}</td>
+            <td style="max-width:180px;word-break:break-word;">{{ c.chapter_title or '—' }}</td>
+            <td>
+              {% if c.book_or_chapter %}
+                <span class="badge {{ type_badge.get(c.book_or_chapter, 'badge-gray') }}">{{ c.book_or_chapter }}</span>
+              {% else %}—{% endif %}
+            </td>
+            <td>
+              {% if c.internal_external %}
+                <span class="badge {{ ie_badge.get(c.internal_external, 'badge-gray') }}">{{ c.internal_external }}</span>
+              {% else %}—{% endif %}
+            </td>
+            <td>
+              {% if c.national_international %}
+                <span class="badge {{ scope_badge.get(c.national_international, 'badge-gray') }}">{{ c.national_international }}</span>
+              {% else %}—{% endif %}
+            </td>
+            <td class="text-muted text-sm">{{ c.publication_date.strftime("%d-%b-%Y") if c.publication_date else '—' }}</td>
+            <td class="text-muted text-sm">{{ c.isbn or '—' }}</td>
+            <td style="max-width:140px;word-break:break-word;">{{ c.proceedings_publisher or '—' }}</td>
+            <td style="max-width:140px;word-break:break-word;">{{ c.co_authors or '—' }}</td>
+            <td class="text-muted text-sm">
+              {% if c.doi %}
+                <a href="https://doi.org/{{ c.doi }}" target="_blank" title="{{ c.doi }}">{{ c.doi[:18] }}{% if c.doi|length > 18 %}…{% endif %}</a>
+              {% else %}—{% endif %}
+            </td>
+            <td style="max-width:140px;word-break:break-word;">{{ c.indexed_in or '—' }}</td>
+            <td style="white-space:nowrap;">
+              {% if c.journal_link %}
+                <a href="{{ c.journal_link }}" target="_blank" class="btn btn-ghost btn-sm" title="Journal">🔗</a>
+              {% endif %}
+              {% if c.supporting_doc_link %}
+                <a href="{{ c.supporting_doc_link }}" target="_blank" class="btn btn-ghost btn-sm" title="Supporting Doc">📄</a>
+              {% endif %}
+              {% if not c.journal_link and not c.supporting_doc_link %}—{% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#CBD5E0" stroke-width="1.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      <h3>No book chapters found</h3>
+      <p>No faculty book or chapter publications have been recorded yet.</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

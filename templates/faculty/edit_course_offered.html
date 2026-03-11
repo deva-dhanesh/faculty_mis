@@ -1,0 +1,137 @@
+{% extends "layouts/faculty_base.html" %}
+{% block title %}Edit Course Offered{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>Edit Course Offered</h1>
+    <p>Update the details of this course.</p>
+  </div>
+  <div class="page-header-actions">
+    <a href="{{ url_for('my_courses') }}" class="btn btn-ghost">← Value Added Programs</a>
+  </div>
+</div>
+
+<div class="form-card" style="max-width:900px;">
+  <div class="form-card-header">
+    <h2>Course Offered Details</h2>
+  </div>
+  <div class="form-card-body">
+    <form method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+      <div class="form-section-title" style="font-size:13px;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:.6px;margin-bottom:14px;border-bottom:1px solid var(--border-color);padding-bottom:6px;">
+        Course Information
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="course_name">
+          Name of the Certificate / Value-Added Course <span style="color:red;">*</span>
+        </label>
+        <input class="form-input" type="text" id="course_name" name="course_name"
+               value="{{ entry.course_name }}" required/>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="online_course_name">
+          Name of the Online Course &amp; Platform
+        </label>
+        <input class="form-input" type="text" id="online_course_name" name="online_course_name"
+               value="{{ entry.online_course_name or '' }}"/>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="program_name">Program Name</label>
+          <input class="form-input" type="text" id="program_name" name="program_name"
+                 value="{{ entry.program_name or '' }}"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="department">Department</label>
+          <input class="form-input" type="text" id="department" name="department"
+                 value="{{ entry.department or '' }}"/>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="credits_assigned">Credits Assigned</label>
+        <input class="form-input" type="text" id="credits_assigned" name="credits_assigned"
+               value="{{ entry.credits_assigned or '' }}" placeholder="e.g. Yes — 2 Credits  OR  No"/>
+      </div>
+
+      <div class="form-section-title" style="font-size:13px;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:.6px;margin:20px 0 14px;border-bottom:1px solid var(--border-color);padding-bottom:6px;">
+        Schedule &amp; Delivery
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="date_from">Date of Offering From</label>
+          <input class="form-input" type="date" id="date_from" name="date_from"
+                 value="{{ entry.date_from.strftime('%Y-%m-%d') if entry.date_from else '' }}"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="date_to">Date of Offering To</label>
+          <input class="form-input" type="date" id="date_to" name="date_to"
+                 value="{{ entry.date_to.strftime('%Y-%m-%d') if entry.date_to else '' }}"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="times_offered">Times Offered (Same Year)</label>
+          <input class="form-input" type="number" id="times_offered" name="times_offered"
+                 value="{{ entry.times_offered if entry.times_offered is not none else '' }}" min="1"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="contact_hours">Total Contact Hours</label>
+          <input class="form-input" type="number" id="contact_hours" name="contact_hours"
+                 value="{{ entry.contact_hours if entry.contact_hours is not none else '' }}" min="0" step="0.5"/>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="mode">Mode of Course</label>
+        <input class="form-input" type="text" id="mode" name="mode"
+               value="{{ entry.mode or '' }}"/>
+      </div>
+
+      <div class="form-section-title" style="font-size:13px;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:.6px;margin:20px 0 14px;border-bottom:1px solid var(--border-color);padding-bottom:6px;">
+        Supporting Links &amp; Documents
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="students_enrolled_link">Students Enrolled List (USN)</label>
+          <input class="form-input" type="url" id="students_enrolled_link" name="students_enrolled_link"
+                 value="{{ entry.students_enrolled_link or '' }}" placeholder="https://..."/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="students_completing_link">Students Completing List</label>
+          <input class="form-input" type="url" id="students_completing_link" name="students_completing_link"
+                 value="{{ entry.students_completing_link or '' }}" placeholder="https://..."/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="attendance_link">Attendance Link</label>
+          <input class="form-input" type="url" id="attendance_link" name="attendance_link"
+                 value="{{ entry.attendance_link or '' }}" placeholder="https://..."/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="brochure_link">Brochure / Syllabus Link</label>
+          <input class="form-input" type="url" id="brochure_link" name="brochure_link"
+                 value="{{ entry.brochure_link or '' }}" placeholder="https://..."/>
+        </div>
+        <div class="form-group form-span-2">
+          <label class="form-label" for="certificate_link">Sample Certificate Link</label>
+          <input class="form-input" type="url" id="certificate_link" name="certificate_link"
+                 value="{{ entry.certificate_link or '' }}" placeholder="https://..."/>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:12px;margin-top:24px;">
+        <button type="submit" class="btn btn-primary">Update Course</button>
+        <a href="{{ url_for('my_courses') }}" class="btn btn-ghost">Cancel</a>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+{% endblock %}

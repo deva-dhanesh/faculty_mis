@@ -1,0 +1,80 @@
+{% extends "layouts/admin_base.html" %}
+{% block title %}View Fellowships{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>Fellowships</h1>
+    <p>All faculty fellowships and awards across the institution.</p>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <h3>All Fellowships</h3>
+    <p>{{ fellowships|length if fellowships else 0 }} record(s)</p>
+  </div>
+  <div class="card-body-flush">
+    {% if fellowships and fellowships|length > 0 %}
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Faculty</th>
+            <th>Award / Fellowship</th>
+            <th>Financial Support</th>
+            <th>Support Type</th>
+            <th>Nat/Int</th>
+            <th>Date of Award</th>
+            <th>Agency</th>
+            <th>Duration</th>
+            <th>Research Topic</th>
+            <th>Location</th>
+            <th>Doc</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% set ni_badge = {
+            'National':      'badge-blue',
+            'International': 'badge-purple'
+          } %}
+          {% for f in fellowships %}
+          <tr>
+            <td class="text-muted text-sm">{{ loop.index }}</td>
+            <td><span class="badge badge-gray" style="font-size:11px;">{{ f.user_id }}</span></td>
+            <td class="td-bold" style="max-width:180px;word-break:break-word;">{{ f.award_name }}</td>
+            <td class="text-sm">{{ f.financial_support or '—' }}</td>
+            <td class="text-sm">{{ f.support_type or '—' }}</td>
+            <td>
+              {% if f.national_international %}
+                <span class="badge {{ ni_badge.get(f.national_international, 'badge-gray') }}">{{ f.national_international }}</span>
+              {% else %}—{% endif %}
+            </td>
+            <td class="text-muted text-sm">{{ f.award_date.strftime("%d-%m-%Y") if f.award_date else '—' }}</td>
+            <td class="text-sm" style="max-width:130px;word-break:break-word;">{{ f.awarding_agency or '—' }}</td>
+            <td class="text-sm">{{ f.duration or '—' }}</td>
+            <td class="text-sm" style="max-width:150px;word-break:break-word;">{{ f.research_topic or '—' }}</td>
+            <td class="text-sm" style="max-width:130px;word-break:break-word;">{{ f.location or '—' }}</td>
+            <td>
+              {% if f.grant_letter_link %}
+                <a href="{{ f.grant_letter_link }}" target="_blank" class="btn btn-ghost btn-sm" title="Grant Letter">📄</a>
+              {% else %}—{% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#CBD5E0" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      <h3>No fellowship records found</h3>
+      <p>No faculty fellowships have been recorded yet.</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

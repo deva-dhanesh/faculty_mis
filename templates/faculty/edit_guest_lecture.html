@@ -1,0 +1,96 @@
+{% extends "layouts/faculty_base.html" %}
+{% block title %}Edit Guest Lecture{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>Edit Guest Lecture</h1>
+    <p>Update details for this guest lecture.</p>
+  </div>
+  <div class="page-header-actions">
+    <a href="{{ url_for('my_guest_lectures') }}" class="btn btn-ghost">← Back to My Guest Lectures</a>
+  </div>
+</div>
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% for category, message in messages %}
+    <div class="alert alert-{{ category }}" style="margin-bottom:16px;">{{ message }}</div>
+  {% endfor %}
+{% endwith %}
+
+<div class="form-card" style="max-width:860px;">
+  <div class="form-card-header">
+    <h2>Guest Lecture Details</h2>
+  </div>
+  <div class="form-card-body">
+    <form method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+      <div class="form-group">
+        <label class="form-label" for="lecture_title">Lecture Title / Topic Delivered <span style="color:red;">*</span></label>
+        <input class="form-input" type="text" id="lecture_title" name="lecture_title"
+               value="{{ entry.lecture_title }}" required/>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="organization_location">Organization &amp; Location</label>
+        <input class="form-input" type="text" id="organization_location" name="organization_location"
+               value="{{ entry.organization_location or '' }}"/>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="lecture_date">Date (DD-MM-YYYY)</label>
+          <input class="form-input" type="date" id="lecture_date" name="lecture_date"
+                 value="{{ entry.lecture_date.strftime('%Y-%m-%d') if entry.lecture_date else '' }}"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="jain_or_outside">JAIN / Outside</label>
+          <select class="form-select" id="jain_or_outside" name="jain_or_outside">
+            <option value="">— Select —</option>
+            {% for opt in ['JAIN','Outside'] %}
+              <option {% if entry.jain_or_outside == opt %}selected{% endif %}>{{ opt }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="mode">Mode (In-person / Online)</label>
+          <select class="form-select" id="mode" name="mode">
+            <option value="">— Select —</option>
+            {% for opt in ['In-person','Online'] %}
+              <option {% if entry.mode == opt %}selected{% endif %}>{{ opt }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="audience_type">Audience Type</label>
+          <select class="form-select" id="audience_type" name="audience_type">
+            <option value="">— Select —</option>
+            {% for opt in ['Students','Faculty','Industry'] %}
+              <option {% if entry.audience_type == opt %}selected{% endif %}>{{ opt }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="brochure_link">Link to Brochure / Weblink of the Event</label>
+        <input class="form-input" type="url" id="brochure_link" name="brochure_link"
+               value="{{ entry.brochure_link or '' }}" placeholder="https://..."/>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="supporting_doc_link">Link to Supporting Document (Invite Letter / Certificate)</label>
+        <input class="form-input" type="url" id="supporting_doc_link" name="supporting_doc_link"
+               value="{{ entry.supporting_doc_link or '' }}" placeholder="https://..."/>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <a href="{{ url_for('my_guest_lectures') }}" class="btn btn-ghost">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

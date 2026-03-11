@@ -1,0 +1,136 @@
+{% extends "layouts/faculty_base.html" %}
+{% block title %}Edit Publication{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>Edit Publication</h1>
+    <p>Update the details of your research publication.</p>
+  </div>
+  <div class="page-header-actions">
+    <a href="{{ url_for('my_publications') }}" class="btn btn-ghost">← My Publications</a>
+  </div>
+</div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% for category, message in messages %}
+    <div class="alert alert-{{ category }}" style="margin-bottom:16px;">{{ message }}</div>
+  {% endfor %}
+{% endwith %}
+
+<div class="form-card" style="max-width:900px;">
+  <div class="form-card-header">
+    <h2>Publication Details</h2>
+  </div>
+  <div class="form-card-body">
+    <form method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+      <div class="form-group">
+        <label class="form-label" for="title">Title of the Paper / Conference Proceeding <span>*</span></label>
+        <input class="form-input" type="text" id="title" name="title"
+               value="{{ pub.title }}" required/>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="author_position">Position of Faculty as Author</label>
+          <select class="form-select" id="author_position" name="author_position">
+            <option value="">— Select —</option>
+            {% for val in ['First Author','Second Author','Third Author','Corresponding Author','Co-Author'] %}
+              <option value="{{ val }}" {% if pub.author_position == val %}selected{% endif %}>{{ val }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="scholar_id">Scopus ID / ORCID ID / Google Scholar ID</label>
+          <input class="form-input" type="text" id="scholar_id" name="scholar_id"
+                 value="{{ pub.scholar_id or '' }}"
+                 placeholder="e.g. 0000-0002-1234-5678"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="journal">Name of Journal</label>
+          <input class="form-input" type="text" id="journal" name="journal"
+                 value="{{ pub.journal or '' }}"
+                 placeholder="e.g. Nature, IEEE Transactions…"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="publication_date">Date of Publication</label>
+          <input class="form-input" type="date" id="publication_date" name="publication_date"
+                 value="{{ pub.publication_date.strftime('%Y-%m-%d') if pub.publication_date else '' }}"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="issn_isbn">ISSN / ISBN Number</label>
+          <input class="form-input" type="text" id="issn_isbn" name="issn_isbn"
+                 value="{{ pub.issn_isbn or '' }}"
+                 placeholder="e.g. 1234-5678"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="publication_type">Type of Publication</label>
+          <select class="form-select" id="publication_type" name="publication_type">
+            <option value="">— Select —</option>
+            {% for val in ['Journal','Conference'] %}
+              <option value="{{ val }}" {% if pub.publication_type == val %}selected{% endif %}>{{ val }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="journal_quartile">Journal Quartile</label>
+          <select class="form-select" id="journal_quartile" name="journal_quartile">
+            <option value="">— Select —</option>
+            {% for val in ['Q1','Q2','Q3','Q4'] %}
+              <option value="{{ val }}" {% if pub.journal_quartile == val %}selected{% endif %}>{{ val }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="impact_factor">Impact Factor</label>
+          <input class="form-input" type="text" id="impact_factor" name="impact_factor"
+                 value="{{ pub.impact_factor or '' }}"
+                 placeholder="e.g. 4.52"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="h_index">h-index</label>
+          <input class="form-input" type="text" id="h_index" name="h_index"
+                 value="{{ pub.h_index or '' }}"
+                 placeholder="e.g. 12"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="citation_index">Citation Index</label>
+          <input class="form-input" type="text" id="citation_index" name="citation_index"
+                 value="{{ pub.citation_index or '' }}"
+                 placeholder="e.g. 150"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="indexing">Indexing</label>
+          <select class="form-select" id="indexing" name="indexing">
+            <option value="">— Select —</option>
+            {% for val in ['Scopus','WoS','UGC CARE','PubMed','Others'] %}
+              <option value="{{ val }}" {% if pub.indexing == val %}selected{% endif %}>{{ val }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="doi">DOI</label>
+          <input class="form-input" type="text" id="doi" name="doi"
+                 value="{{ pub.doi or '' }}"
+                 placeholder="e.g. 10.1038/nature12373"/>
+        </div>
+        <div class="form-group form-span-2">
+          <label class="form-label" for="article_link">Link to Article / Conference Proceeding</label>
+          <input class="form-input" type="url" id="article_link" name="article_link"
+                 value="{{ pub.article_link or '' }}"
+                 placeholder="https://..."/>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <a href="{{ url_for('my_publications') }}" class="btn btn-ghost">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

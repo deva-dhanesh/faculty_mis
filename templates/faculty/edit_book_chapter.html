@@ -1,0 +1,137 @@
+{% extends "layouts/faculty_base.html" %}
+{% block title %}Edit Book / Chapter{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>Edit Book / Chapter</h1>
+    <p>Update details for this book or chapter.</p>
+  </div>
+  <div class="page-header-actions">
+    <a href="{{ url_for('my_book_chapters') }}" class="btn btn-ghost">← Back to My Book Chapters</a>
+  </div>
+</div>
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% for category, message in messages %}
+    <div class="alert alert-{{ category }}" style="margin-bottom:16px;">{{ message }}</div>
+  {% endfor %}
+{% endwith %}
+
+<div class="form-card" style="max-width:860px;">
+  <div class="form-card-header">
+    <h2>Book / Chapter Details</h2>
+  </div>
+  <div class="form-card-body">
+    <form method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+      <div class="form-section-title" style="font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);font-weight:600;margin-bottom:12px;">Book &amp; Chapter Information</div>
+
+      <div class="form-group">
+        <label class="form-label" for="book_title">Title of the Books Published <span style="color:red;">*</span></label>
+        <input class="form-input" type="text" id="book_title" name="book_title"
+               value="{{ entry.book_title }}" required/>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="chapter_title">Title of the Chapters Published</label>
+        <input class="form-input" type="text" id="chapter_title" name="chapter_title"
+               value="{{ entry.chapter_title or '' }}"/>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="book_or_chapter">Category (Book / Chapter)</label>
+          <select class="form-select" id="book_or_chapter" name="book_or_chapter">
+            <option value="">— Select —</option>
+            {% for opt in ['Book','Chapter'] %}
+              <option {% if entry.book_or_chapter == opt %}selected{% endif %}>{{ opt }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="internal_external">Category (Internal / External)</label>
+          <select class="form-select" id="internal_external" name="internal_external">
+            <option value="">— Select —</option>
+            {% for opt in ['Internal','External'] %}
+              <option {% if entry.internal_external == opt %}selected{% endif %}>{{ opt }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="national_international">National / International</label>
+          <select class="form-select" id="national_international" name="national_international">
+            <option value="">— Select —</option>
+            {% for opt in ['National','International'] %}
+              <option {% if entry.national_international == opt %}selected{% endif %}>{{ opt }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="publication_date">Date of Publication</label>
+          <input class="form-input" type="date" id="publication_date" name="publication_date"
+                 value="{{ entry.publication_date.strftime('%Y-%m-%d') if entry.publication_date else '' }}"/>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="translated_title">Title of Books Translated into Bhartiya Bhasha</label>
+        <input class="form-input" type="text" id="translated_title" name="translated_title"
+               value="{{ entry.translated_title or '' }}"/>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="proceedings_publisher">Title of the Conference Proceedings / Publisher</label>
+        <input class="form-input" type="text" id="proceedings_publisher" name="proceedings_publisher"
+               value="{{ entry.proceedings_publisher or '' }}"/>
+      </div>
+
+      <div class="form-section-title" style="font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);font-weight:600;margin:20px 0 12px;">Additional Details</div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="isbn">ISBN Number</label>
+          <input class="form-input" type="text" id="isbn" name="isbn"
+                 value="{{ entry.isbn or '' }}"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="doi">DOI (if available)</label>
+          <input class="form-input" type="text" id="doi" name="doi"
+                 value="{{ entry.doi or '' }}"/>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="co_authors">Co-authors (if any)</label>
+        <input class="form-input" type="text" id="co_authors" name="co_authors"
+               value="{{ entry.co_authors or '' }}"/>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="indexed_in">Indexed in Databases (Please specify)</label>
+        <input class="form-input" type="text" id="indexed_in" name="indexed_in"
+               value="{{ entry.indexed_in or '' }}"/>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="journal_link">Link to Journal Source / Cite Website</label>
+        <input class="form-input" type="url" id="journal_link" name="journal_link"
+               value="{{ entry.journal_link or '' }}" placeholder="https://..."/>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="supporting_doc_link">Supporting Doc Link</label>
+        <input class="form-input" type="url" id="supporting_doc_link" name="supporting_doc_link"
+               value="{{ entry.supporting_doc_link or '' }}" placeholder="https://..."/>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <a href="{{ url_for('my_book_chapters') }}" class="btn btn-ghost">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

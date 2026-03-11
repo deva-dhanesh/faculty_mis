@@ -1,0 +1,142 @@
+{% extends "layouts/admin_base.html" %}
+{% block title %}Edit Profile{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>Edit Faculty Profile</h1>
+    <p>Update the profile details for this faculty member.</p>
+  </div>
+  <div class="page-header-actions">
+    <a href="{{ url_for('view_faculty_profiles') }}" class="btn btn-ghost">← Back</a>
+  </div>
+</div>
+
+<div class="form-card" style="max-width:800px;">
+  <div class="form-card-header">
+    <h2>Profile Details</h2>
+    <p>All fields below can be edited by the administrator.</p>
+  </div>
+  <div class="form-card-body">
+    <form method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="employee_id">Employee ID</label>
+          <input class="form-input" type="text" id="employee_id" name="employee_id"
+                 value="{{ profile.employee_id }}"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="full_name">Full Name</label>
+          <input class="form-input" type="text" id="full_name" name="full_name"
+                 value="{{ profile.full_name }}"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="pan">PAN Number</label>
+          <input class="form-input" type="text" id="pan" name="pan"
+                 value="{{ profile.pan }}"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="designation">Designation</label>
+          <input class="form-input" type="text" id="designation" name="designation"
+                 value="{{ profile.designation }}"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="department">Department</label>
+          <input class="form-input" type="text" id="department" name="department"
+                 value="{{ profile.department }}"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="qualification">Qualification</label>
+          <input class="form-input" type="text" id="qualification" name="qualification"
+                 value="{{ profile.qualification }}"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="experience_years">Experience (Years)</label>
+          <input class="form-input" type="number" id="experience_years" name="experience_years"
+                 value="{{ profile.experience_years }}" min="0"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="mobile">Mobile Number</label>
+          <input class="form-input" type="text" id="mobile" name="mobile"
+                 value="{{ profile.mobile }}"/>
+        </div>
+        <div class="form-group form-span-2">
+          <label class="form-label" for="email_university">University Email</label>
+          <input class="form-input" type="email" id="email_university" name="email_university"
+                 value="{{ profile.email_university }}"/>
+        </div>
+        <div class="form-group form-span-2">
+          <label class="form-label" for="specialization">Specialization</label>
+          <input class="form-input" type="text" id="specialization" name="specialization"
+                 value="{{ profile.specialization }}" placeholder="e.g. Machine Learning, IoT"/>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <a href="{{ url_for('view_faculty_profiles') }}" class="btn btn-ghost">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}
+
+<h2>Edit Faculty Profile</h2>
+
+<form method="POST">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+Employee ID:<br>
+<input type="text" name="employee_id"
+value="{{ profile.employee_id }}"><br><br>
+
+Full Name:<br>
+<input type="text" name="full_name"
+value="{{ profile.full_name }}"><br><br>
+
+PAN:<br>
+<input type="text" name="pan"
+value="{{ profile.pan }}"><br><br>
+
+Designation:<br>
+<input type="text" name="designation"
+value="{{ profile.designation }}"><br><br>
+
+Department:<br>
+<input type="text" name="department"
+value="{{ profile.department }}"><br><br>
+
+Qualification:<br>
+<input type="text" name="qualification"
+value="{{ profile.qualification }}"><br><br>
+
+Experience:<br>
+<input type="number" name="experience_years"
+value="{{ profile.experience_years }}"><br><br>
+
+Mobile:<br>
+<input type="text" name="mobile"
+value="{{ profile.mobile }}"><br><br>
+
+University Email:<br>
+<input type="email" name="email_university"
+value="{{ profile.email_university }}"><br><br>
+
+Specialization:<br>
+<input type="text" name="specialization"
+value="{{ profile.specialization }}"><br><br>
+
+<button type="submit">Update Profile</button>
+
+</form>
+
+<br>
+
+<a href="/view_faculty_profiles">Back</a>
+
+</body>
+</html>

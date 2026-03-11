@@ -1,0 +1,210 @@
+{% extends "layouts/admin_base.html" %}
+{% block title %}View FDP Programs{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>FDP Programs</h1>
+    <p>All faculty FDP records — participated &amp; organised.</p>
+  </div>
+</div>
+
+<!-- Tab Navigation -->
+<div style="display:flex;gap:0;border-bottom:2px solid var(--border-color);margin-bottom:24px;">
+  <button class="fdp-tab active" data-tab="participated"
+          style="padding:10px 24px;border:none;background:none;font-weight:600;font-size:14px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s;">
+    📚 Participated
+    <span class="badge badge-blue" style="margin-left:6px;">{{ participated|length }}</span>
+  </button>
+  <button class="fdp-tab" data-tab="organised"
+          style="padding:10px 24px;border:none;background:none;font-weight:600;font-size:14px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s;">
+    🏫 Organised
+    <span class="badge badge-green" style="margin-left:6px;">{{ organised|length }}</span>
+  </button>
+</div>
+
+<!-- ═══════════════════ PARTICIPATED ═══════════════════ -->
+<div id="tab-participated" class="fdp-panel">
+  <div class="card">
+    <div class="card-header">
+      <h3>FDP Participated</h3>
+      <p>{{ participated|length }} record(s)</p>
+    </div>
+    <div class="card-body-flush">
+      {% if participated %}
+      <div class="table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Faculty</th>
+              <th>Program Title</th>
+              <th>Days</th>
+              <th>Duration</th>
+              <th>Type</th>
+              <th>Nat/Int</th>
+              <th>Mode</th>
+              <th>Agency</th>
+              <th>Funding</th>
+              <th>Coursera</th>
+              <th>Links</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% set ni_badge = {'National': 'badge-blue', 'International': 'badge-purple'} %}
+            {% set mode_badge = {'Online': 'badge-blue', 'Offline': 'badge-green', 'Hybrid': 'badge-purple'} %}
+            {% for f in participated %}
+            <tr>
+              <td class="text-muted text-sm">{{ loop.index }}</td>
+              <td><span class="badge badge-gray" style="font-size:11px;">{{ f.user_id }}</span></td>
+              <td class="td-bold" style="max-width:200px;word-break:break-word;">{{ f.program_title }}</td>
+              <td class="text-sm text-center">{{ f.duration_days or '—' }}</td>
+              <td class="text-muted text-sm" style="white-space:nowrap;">
+                {{ f.start_date.strftime("%d-%m-%Y") if f.start_date else '?' }}
+                &ndash;
+                {{ f.end_date.strftime("%d-%m-%Y") if f.end_date else '?' }}
+              </td>
+              <td class="text-sm">{{ f.program_type or '—' }}</td>
+              <td>
+                {% if f.national_international %}
+                  <span class="badge {{ ni_badge.get(f.national_international, 'badge-gray') }}">{{ f.national_international }}</span>
+                {% else %}—{% endif %}
+              </td>
+              <td>
+                {% if f.mode %}
+                  <span class="badge {{ mode_badge.get(f.mode, 'badge-gray') }}">{{ f.mode }}</span>
+                {% else %}—{% endif %}
+              </td>
+              <td class="text-sm" style="max-width:150px;word-break:break-word;">{{ f.organizing_agency or '—' }}</td>
+              <td class="text-sm">{{ f.funding or '—' }}</td>
+              <td>
+                {% if f.enrolled_coursera == 'Yes' %}
+                  <span class="badge badge-green">Yes</span>
+                {% elif f.enrolled_coursera == 'No' %}
+                  <span class="badge badge-gray">No</span>
+                {% else %}—{% endif %}
+              </td>
+              <td style="white-space:nowrap;">
+                {% if f.certificate_link %}
+                  <a href="{{ f.certificate_link }}" target="_blank" class="btn btn-ghost btn-sm" title="Certificate">🏅</a>
+                {% endif %}
+                {% if f.brochure_link %}
+                  <a href="{{ f.brochure_link }}" target="_blank" class="btn btn-ghost btn-sm" title="Brochure">📄</a>
+                {% endif %}
+                {% if not f.certificate_link and not f.brochure_link %}—{% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="empty-state">
+        <div class="empty-state-icon">📚</div>
+        <h3>No FDP participation records found</h3>
+        <p>No faculty FDP participation records have been recorded yet.</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ ORGANISED ═══════════════════ -->
+<div id="tab-organised" class="fdp-panel" style="display:none;">
+  <div class="card">
+    <div class="card-header">
+      <h3>FDP Organised</h3>
+      <p>{{ organised|length }} record(s)</p>
+    </div>
+    <div class="card-body-flush">
+      {% if organised %}
+      <div class="table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Faculty</th>
+              <th>Title</th>
+              <th>Department</th>
+              <th>Role</th>
+              <th>Collaboration</th>
+              <th>Focus Area</th>
+              <th>Nat/Int</th>
+              <th>Participants</th>
+              <th>Duration</th>
+              <th>Report</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% set ni_badge = {'National': 'badge-blue', 'International': 'badge-purple'} %}
+            {% for f in organised %}
+            <tr>
+              <td class="text-muted text-sm">{{ loop.index }}</td>
+              <td><span class="badge badge-gray" style="font-size:11px;">{{ f.user_id }}</span></td>
+              <td class="td-bold" style="max-width:200px;word-break:break-word;">{{ f.title }}</td>
+              <td class="text-sm">{{ f.department or '—' }}</td>
+              <td class="text-sm">{{ f.faculty_role or '—' }}</td>
+              <td class="text-sm" style="max-width:140px;word-break:break-word;">{{ f.collaboration or '—' }}</td>
+              <td class="text-sm">{{ f.focus_area or '—' }}</td>
+              <td>
+                {% if f.national_international %}
+                  <span class="badge {{ ni_badge.get(f.national_international, 'badge-gray') }}">{{ f.national_international }}</span>
+                {% else %}—{% endif %}
+              </td>
+              <td style="text-align:center;">{{ f.num_participants if f.num_participants is not none else '—' }}</td>
+              <td class="text-muted text-sm" style="white-space:nowrap;">
+                {{ f.date_from.strftime("%d-%m-%Y") if f.date_from else '?' }}
+                &ndash;
+                {{ f.date_to.strftime("%d-%m-%Y") if f.date_to else '?' }}
+              </td>
+              <td>
+                {% if f.activity_report_link %}
+                  <a href="{{ f.activity_report_link }}" target="_blank" class="btn btn-ghost btn-sm">View</a>
+                {% else %}—{% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="empty-state">
+        <div class="empty-state-icon">🏫</div>
+        <h3>No FDP organisation records found</h3>
+        <p>No faculty FDP organisation records have been recorded yet.</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var tabs = document.querySelectorAll('.fdp-tab');
+
+  function switchTab(activeTab) {
+    var which = activeTab.dataset.tab;
+    tabs.forEach(function (t) {
+      t.classList.remove('active');
+      t.style.borderBottomColor = 'transparent';
+      t.style.color = '';
+    });
+    document.querySelectorAll('.fdp-panel').forEach(function (p) {
+      p.style.display = 'none';
+    });
+    activeTab.classList.add('active');
+    activeTab.style.borderBottomColor = 'var(--primary)';
+    activeTab.style.color = 'var(--primary)';
+    document.getElementById('tab-' + which).style.display = 'block';
+  }
+
+  tabs.forEach(function (tab) {
+    tab.addEventListener('click', function () { switchTab(tab); });
+  });
+
+  if (tabs[0]) switchTab(tabs[0]);
+})();
+</script>
+
+{% endblock %}

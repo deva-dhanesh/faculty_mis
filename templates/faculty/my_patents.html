@@ -1,0 +1,117 @@
+{% extends "layouts/faculty_base.html" %}
+{% block title %}My Patents / IP{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>My Patents / IP</h1>
+    <p>Track patents, copyrights, trademarks, GIs and design registrations.</p>
+  </div>
+  <div class="page-header-actions">
+    <a href="{{ url_for('bulk_upload_patents') }}" class="btn btn-ghost">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right:5px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      Bulk Upload
+    </a>
+    <a href="{{ url_for('add_patent') }}" class="btn btn-primary">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add Patent / IP
+    </a>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <h3>All Patents / IP</h3>
+    <p>{{ patents|length if patents else 0 }} record(s)</p>
+  </div>
+  <div class="card-body-flush">
+    {% if patents and patents|length > 0 %}
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Application No.</th>
+            <th>Type</th>
+            <th>Title of Invention / Work</th>
+            <th>Status</th>
+            <th>Filing Date</th>
+            <th>Published</th>
+            <th>Grant Date</th>
+            <th>Agency</th>
+            <th>Nat/Int</th>
+            <th>Doc</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% set type_badge = {
+            'Patent':               'badge-blue',
+            'Copyright':            'badge-purple',
+            'Trademark':            'badge-amber',
+            'GI':                   'badge-green',
+            'Design Registration':  'badge-gray'
+          } %}
+          {% set status_badge = {
+            'Filed':     'badge-amber',
+            'Published': 'badge-blue',
+            'Awarded':   'badge-green'
+          } %}
+          {% set ni_badge = {
+            'National':      'badge-blue',
+            'International': 'badge-purple'
+          } %}
+          {% for p in patents %}
+          <tr>
+            <td class="text-muted text-sm">{{ loop.index }}</td>
+            <td class="text-sm" style="white-space:nowrap;">{{ p.application_number or '—' }}</td>
+            <td>
+              {% if p.ip_type %}
+                <span class="badge {{ type_badge.get(p.ip_type, 'badge-gray') }}">{{ p.ip_type }}</span>
+              {% else %}—{% endif %}
+            </td>
+            <td class="td-bold" style="max-width:220px;word-break:break-word;">{{ p.title }}</td>
+            <td>
+              {% if p.status %}
+                <span class="badge {{ status_badge.get(p.status, 'badge-gray') }}">{{ p.status }}</span>
+              {% else %}—{% endif %}
+            </td>
+            <td class="text-muted text-sm">{{ p.filing_date.strftime("%d-%b-%Y") if p.filing_date else '—' }}</td>
+            <td class="text-muted text-sm">{{ p.published_date.strftime("%d-%b-%Y") if p.published_date else '—' }}</td>
+            <td class="text-muted text-sm">{{ p.grant_date.strftime("%d-%b-%Y") if p.grant_date else '—' }}</td>
+            <td class="text-sm" style="max-width:140px;word-break:break-word;">{{ p.awarding_agency or '—' }}</td>
+            <td>
+              {% if p.national_international %}
+                <span class="badge {{ ni_badge.get(p.national_international, 'badge-gray') }}">{{ p.national_international }}</span>
+              {% else %}—{% endif %}
+            </td>
+            <td>
+              {% if p.supporting_doc_link %}
+                <a href="{{ p.supporting_doc_link }}" target="_blank" class="btn btn-ghost btn-sm" title="Supporting Doc">📄</a>
+              {% else %}—{% endif %}
+            </td>
+            <td style="white-space:nowrap;">
+              <a href="{{ url_for('edit_patent', entry_id=p.id) }}" class="btn btn-ghost btn-sm">Edit</a>
+              <form method="POST" action="{{ url_for('delete_patent', entry_id=p.id) }}" style="display:inline;" onsubmit="return confirm('Delete this patent record? This cannot be undone.');">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <button type="submit" class="btn btn-sm" style="color:#e53e3e;border-color:#e53e3e;background:transparent;">Delete</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#CBD5E0" stroke-width="1.5"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2z"/></svg>
+      <h3>No patents / IP records yet</h3>
+      <p>Add your first patent or intellectual property record to get started.</p>
+      <a href="{{ url_for('add_patent') }}" class="btn btn-primary" style="margin-top:12px;">Add Patent / IP</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

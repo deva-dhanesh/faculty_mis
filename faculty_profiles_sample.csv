@@ -1,0 +1,2 @@
+employee_id,full_name,pan,designation,date_of_joining,date_of_birth,appointment_nature,qualification,department,experience_years,mobile,email_personal,email_university,specialization,appointment_letter_url
+FAC100,Dr John Doe,ABCDE1234F,Professor,2020-01-15,1985-06-10,Permanent,PhD,CSE,10,9876543210,john@gmail.com,john@univ.edu,AI,http://example.com/doc

@@ -1,0 +1,125 @@
+{% extends "layouts/admin_base.html" %}
+{% block title %}Research Projects{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>Research Projects</h1>
+    <p>All faculty research and funded projects.</p>
+  </div>
+  <div class="page-header-actions">
+    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-ghost">← Dashboard</a>
+  </div>
+</div>
+
+<div class="card">
+
+  <!-- Filter Bar -->
+  <form method="GET" action="{{ url_for('view_projects') }}">
+    <div class="filter-bar">
+      <div class="filter-group filter-search">
+        <label>Search</label>
+        <input type="text" name="q" value="{{ q }}" placeholder="Title, funding agency…">
+      </div>
+      <div class="filter-group">
+        <label>Project Type</label>
+        <select name="project_type" class="form-select">
+          <option value="">All Types</option>
+          {% for pt in project_types %}
+            <option value="{{ pt }}" {% if project_type == pt %}selected{% endif %}>{{ pt }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Status</label>
+        <select name="status" class="form-select">
+          <option value="">All Status</option>
+          {% for st in statuses %}
+            <option value="{{ st }}" {% if status == st %}selected{% endif %}>{{ st }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="filter-actions">
+        <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+        {% if q or project_type or status %}
+          <a href="{{ url_for('view_projects') }}" class="btn btn-ghost btn-sm">Clear</a>
+        {% endif %}
+      </div>
+    </div>
+  </form>
+
+  <div class="card-header" style="border-top:none;">
+    <div>
+      <h3>Research Projects{% if q or project_type or status %}&nbsp;<span class="filter-active-badge"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46"/></svg> Filtered</span>{% endif %}</h3>
+      <p class="filter-result-count">{{ projects|length }} project(s) found</p>
+    </div>
+  </div>
+  <div class="card-body-flush">
+    {% if projects and projects|length > 0 %}
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Faculty ID</th>
+            <th>Scheme / Project Name</th>
+            <th>PI / Co-PI</th>
+            <th>Funding Agency</th>
+            <th>Type</th>
+            <th>Amount (Lakhs)</th>
+            <th>Date of Award</th>
+            <th>Duration</th>
+            <th>Status</th>
+            <th>Doc</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in projects %}
+          <tr>
+            <td class="text-muted text-sm">{{ loop.index }}</td>
+            <td><span class="badge badge-blue">{{ p.user_id }}</span></td>
+            <td class="td-bold" style="max-width:200px;word-break:break-word;">{{ p.scheme_name }}</td>
+            <td style="max-width:160px;word-break:break-word;">{{ p.pi_co_pi or '—' }}</td>
+            <td>{{ p.funding_agency or '—' }}</td>
+            <td>
+              {% if p.project_type %}
+                <span class="badge {{ 'badge-blue' if p.project_type == 'Govt.' else 'badge-amber' }}">{{ p.project_type }}</span>
+              {% else %}—{% endif %}
+            </td>
+            <td>{{ '%.2f'|format(p.amount) if p.amount is not none else '—' }}</td>
+            <td class="text-muted text-sm">{{ p.date_of_award.strftime("%d-%b-%Y") if p.date_of_award else '—' }}</td>
+            <td class="text-muted text-sm">{{ p.duration_years or '—' }}</td>
+            <td>
+              {% set sc = {'Ongoing':'badge-green','Completed':'badge-blue'} %}
+              {% if p.status %}
+                <span class="badge {{ sc.get(p.status, 'badge-gray') }}">{{ p.status }}</span>
+              {% else %}—{% endif %}
+            </td>
+            <td>
+              {% if p.document_link %}
+                <a href="{{ p.document_link }}" target="_blank" class="btn btn-ghost btn-sm" title="Open document">🔗</a>
+              {% else %}—{% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <div class="empty-state-icon">🔬</div>
+      {% if q or project_type or status %}
+        <h3>No results match your filters</h3>
+        <p>Try adjusting the filters or <a href="{{ url_for('view_projects') }}">clear all</a>.</p>
+      {% else %}
+        <h3>No projects found</h3>
+        <p>Faculty members have not added any research projects yet.</p>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}
+

@@ -1,0 +1,348 @@
+{% extends "layouts/faculty_base.html" %}
+{% block title %}My Profile{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>My Profile</h1>
+    <p>Keep your academic profile up to date. Employee ID is managed by the admin.</p>
+  </div>
+  <div class="page-header-actions">
+    <a href="{{ url_for('faculty_dashboard') }}" class="btn btn-ghost">← Dashboard</a>
+  </div>
+</div>
+
+<form method="POST">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+<!-- Basic Information -->
+<div class="form-card" style="margin-bottom:24px;">
+  <div class="form-card-header">
+    <h2>Basic Information</h2>
+    <p>Personal and institutional details</p>
+  </div>
+  <div class="form-card-body">
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label">Employee ID</label>
+        <input class="form-input" type="text"
+               value="{{ profile.employee_id if profile else '' }}"
+               disabled title="Employee ID is managed by admin."/>
+        <div class="form-hint">Managed by administrator — read only.</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="full_name">Full Name</label>
+        <input class="form-input" type="text" id="full_name" name="full_name"
+               value="{{ profile.full_name if profile else '' }}" placeholder="Dr. First Last"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="pan">PAN Number</label>
+        <input class="form-input" type="text" id="pan" name="pan"
+               value="{{ profile.pan if profile else '' }}" placeholder="ABCDE1234F"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="designation">Designation</label>
+        <input class="form-input" type="text" id="designation" name="designation"
+               value="{{ profile.designation if profile else '' }}" placeholder="e.g. Associate Professor"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="date_of_joining">Date of Joining</label>
+        <input class="form-input" type="date" id="date_of_joining" name="date_of_joining"
+               value="{{ profile.date_of_joining if profile else '' }}"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="date_of_birth">Date of Birth</label>
+        <input class="form-input" type="date" id="date_of_birth" name="date_of_birth"
+               value="{{ profile.date_of_birth if profile else '' }}"/>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Appointment & Academic Details -->
+<div class="form-card" style="margin-bottom:24px;">
+  <div class="form-card-header">
+    <h2>Appointment &amp; Academic Details</h2>
+  </div>
+  <div class="form-card-body">
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label" for="appointment_nature">Nature of Appointment</label>
+        <select class="form-select" id="appointment_nature" name="appointment_nature">
+          <option value="">Select</option>
+          {% for opt in ['Sanctioned','Temporary','Permanent'] %}
+          <option value="{{ opt }}" {{ 'selected' if profile and profile.appointment_nature==opt }}>{{ opt }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="qualification">Qualification</label>
+        <input class="form-input" type="text" id="qualification" name="qualification"
+               value="{{ profile.qualification if profile else '' }}" placeholder="e.g. Ph.D"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="department">Department</label>
+        <input class="form-input" type="text" id="department" name="department"
+               value="{{ profile.department if profile else '' }}" placeholder="e.g. Computer Science"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="experience_years">Experience (Years)</label>
+        <input class="form-input" type="number" id="experience_years" name="experience_years"
+               value="{{ profile.experience_years if profile else '' }}" min="0"/>
+      </div>
+      <div class="form-group form-span-2">
+        <label class="form-label" for="specialization">Specialization</label>
+        <input class="form-input" type="text" id="specialization" name="specialization"
+               value="{{ profile.specialization if profile else '' }}"
+               placeholder="e.g. Machine Learning, IoT, Computer Networks"/>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Contact Information -->
+<div class="form-card" style="margin-bottom:24px;">
+  <div class="form-card-header">
+    <h2>Contact Information</h2>
+  </div>
+  <div class="form-card-body">
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label" for="mobile">Mobile Number</label>
+        <input class="form-input" type="text" id="mobile" name="mobile"
+               value="{{ profile.mobile if profile else '' }}" placeholder="10-digit mobile"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="email_personal">Personal Email</label>
+        <input class="form-input" type="email" id="email_personal" name="email_personal"
+               value="{{ profile.email_personal if profile else '' }}" placeholder="personal@email.com"/>
+      </div>
+      <div class="form-group form-span-2">
+        <label class="form-label" for="email_university">University Email</label>
+        <input class="form-input" type="email" id="email_university" name="email_university"
+               value="{{ profile.email_university if profile else '' }}" placeholder="you@university.edu"/>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Degree -->
+<div class="form-card" style="margin-bottom:24px;">
+  <div class="form-card-header">
+    <h2>Add a Degree</h2>
+    <p>Optionally add a new academic degree to your profile.</p>
+  </div>
+  <div class="form-card-body">
+    <div class="form-grid-3">
+      <div class="form-group">
+        <label class="form-label" for="degree_name">Degree Name</label>
+        <input class="form-input" type="text" id="degree_name" name="degree_name"
+               placeholder="e.g. Ph.D, M.Tech"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="degree_start_date">Start Date</label>
+        <input class="form-input" type="date" id="degree_start_date" name="degree_start_date"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="degree_award_date">Award Date</label>
+        <input class="form-input" type="date" id="degree_award_date" name="degree_award_date"/>
+      </div>
+      <div class="form-group form-span-2">
+        <label class="form-label" for="university">University / Institution</label>
+        <input class="form-input" type="text" id="university" name="university"
+               placeholder="University name"/>
+      </div>
+    </div>
+
+    <!-- Existing Degrees List -->
+    {% if degrees %}
+    <div style="margin-top:16px; padding-top:16px; border-top:1px solid var(--border-light);">
+      <div style="font-size:12.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:10px;">Existing Degrees</div>
+      {% for d in degrees %}
+      <div style="display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--border-light);">
+        <span class="badge badge-purple">{{ d.degree_name or '—' }}</span>
+        <span style="font-size:13px;color:var(--text);">{{ d.university or '—' }}</span>
+        <span style="font-size:12px;color:var(--muted);">{{ d.degree_award_date or '' }}</span>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<div class="form-actions" style="border-top:none;padding-top:0;">
+  <button type="submit" class="btn btn-primary">Save Profile</button>
+  <a href="{{ url_for('faculty_dashboard') }}" class="btn btn-ghost">Cancel</a>
+</div>
+
+</form>
+
+{% endblock %}
+
+<h2>Faculty Profile Form</h2>
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    {% for message in messages %}
+      <p style="color:green;">{{ message }}</p>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<form method="POST">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+<h3>Basic Information</h3>
+
+Employee ID:<br>
+<input type="text"
+value="{{ profile.employee_id if profile else '' }}"
+disabled
+style="background:#f1f5f9; color:#64748b; cursor:not-allowed;"
+title="Employee ID is managed by admin and cannot be changed."><br><br>
+
+Full Name:<br>
+<input type="text" name="full_name"
+value="{{ profile.full_name if profile else '' }}"><br><br>
+
+PAN:<br>
+<input type="text" name="pan"
+value="{{ profile.pan if profile else '' }}"><br><br>
+
+Designation:<br>
+<input type="text" name="designation"
+value="{{ profile.designation if profile else '' }}"><br><br>
+
+
+<h3>Dates</h3>
+
+Date of Joining:<br>
+<input type="date" name="date_of_joining"
+value="{{ profile.date_of_joining if profile else '' }}"><br><br>
+
+Date of Birth:<br>
+<input type="date" name="date_of_birth"
+value="{{ profile.date_of_birth if profile else '' }}"><br><br>
+
+
+<h3>Appointment Details</h3>
+
+Nature of Appointment:<br>
+<select name="appointment_nature">
+    <option value="">Select</option>
+    <option value="Sanctioned" {% if profile and profile.appointment_nature=='Sanctioned' %}selected{% endif %}>Sanctioned</option>
+    <option value="Temporary" {% if profile and profile.appointment_nature=='Temporary' %}selected{% endif %}>Temporary</option>
+    <option value="Permanent" {% if profile and profile.appointment_nature=='Permanent' %}selected{% endif %}>Permanent</option>
+</select><br><br>
+
+Qualification:<br>
+<input type="text" name="qualification"
+value="{{ profile.qualification if profile else '' }}"><br><br>
+
+Department:<br>
+<input type="text" name="department"
+value="{{ profile.department if profile else '' }}"><br><br>
+
+Experience (Years):<br>
+<input type="number" name="experience_years"
+value="{{ profile.experience_years if profile else '' }}"><br><br>
+
+
+<h3>Documents</h3>
+
+Appointment Letter URL:<br>
+<input type="text" name="appointment_letter_url"
+value="{{ profile.appointment_letter_url if profile else '' }}"><br><br>
+
+
+<h3>Contact Information</h3>
+
+Mobile:<br>
+<input type="text" name="mobile"
+value="{{ profile.mobile if profile else '' }}"><br><br>
+
+Personal Email:<br>
+<input type="email" name="email_personal"
+value="{{ profile.email_personal if profile else '' }}"><br><br>
+
+University Email:<br>
+<input type="email" name="email_university"
+value="{{ profile.email_university if profile else '' }}"><br><br>
+
+
+<h3>Specialization</h3>
+
+<input type="text" name="specialization"
+value="{{ profile.specialization if profile else '' }}"><br><br>
+
+
+<hr>
+
+<h3>Resignation Information (Optional)</h3>
+
+Resignation Date:<br>
+<input type="date" name="resignation_date"
+value="{{ resignation.resignation_date if resignation else '' }}"><br><br>
+
+Relieving Date:<br>
+<input type="date" name="relieving_date"
+value="{{ resignation.relieving_date if resignation else '' }}"><br><br>
+
+Reason:<br>
+<textarea name="reason">{{ resignation.reason if resignation else '' }}</textarea><br><br>
+
+Resignation Letter URL:<br>
+<input type="text" name="resignation_letter_url"
+value="{{ resignation.resignation_letter_url if resignation else '' }}"><br><br>
+
+
+<hr>
+
+<h3>Add Degree (Optional)</h3>
+
+Degree Name:<br>
+<input type="text" name="degree_name"><br><br>
+
+Degree Start Date:<br>
+<input type="date" name="degree_start_date"><br><br>
+
+Degree Award Date:<br>
+<input type="date" name="degree_award_date"><br><br>
+
+University:<br>
+<input type="text" name="university"><br><br>
+
+
+<hr>
+
+<button type="submit">Save Profile</button>
+
+</form>
+
+
+<br><br>
+
+<h3>Existing Degrees</h3>
+
+{% if degrees %}
+    <ul>
+    {% for d in degrees %}
+        <li>
+            {{ d.degree_name }} -
+            {{ d.university }} -
+            {{ d.degree_award_date }}
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No degrees added</p>
+{% endif %}
+
+
+<br>
+
+<a href="/faculty_dashboard">Back to Dashboard</a>
+
+</body>
+</html>

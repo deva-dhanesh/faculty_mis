@@ -1,0 +1,133 @@
+{% extends "layouts/faculty_base.html" %}
+{% block title %}Edit Conference Participated{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>Edit Conference Participated</h1>
+    <p>Update the details for this conference participation record.</p>
+  </div>
+  <div class="page-header-actions">
+    <a href="{{ url_for('my_conferences') }}" class="btn btn-ghost">← Conferences</a>
+  </div>
+</div>
+
+<div class="form-card" style="max-width:860px;">
+  <div class="form-card-header">
+    <h2>Conference Participation Details</h2>
+    <p>Modify the fields that need updating.</p>
+  </div>
+  <div class="form-card-body">
+    <form method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+      <div class="form-group">
+        <label class="form-label" for="conference_title">
+          Title of the Conference <span style="color:red;">*</span>
+        </label>
+        <input class="form-input" type="text" id="conference_title" name="conference_title"
+               value="{{ entry.conference_title }}" required/>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="paper_title">Title of the Paper</label>
+        <input class="form-input" type="text" id="paper_title" name="paper_title"
+               value="{{ entry.paper_title or '' }}"/>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="organisers">Organisers</label>
+        <input class="form-input" type="text" id="organisers" name="organisers"
+               value="{{ entry.organisers or '' }}"/>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="leads_to_publication">Whether Leading to Journal Publication</label>
+          <select class="form-input" id="leads_to_publication" name="leads_to_publication">
+            <option value="">— Select —</option>
+            <option value="Yes" {{ 'selected' if entry.leads_to_publication == 'Yes' }}>Yes</option>
+            <option value="No" {{ 'selected' if entry.leads_to_publication == 'No' }}>No</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="paper_link">Link to Paper, if Published</label>
+          <input class="form-input" type="url" id="paper_link" name="paper_link"
+                 value="{{ entry.paper_link or '' }}"/>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="collaboration">Collaboration</label>
+        <input class="form-input" type="text" id="collaboration" name="collaboration"
+               value="{{ entry.collaboration or '' }}"/>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="focus_area">Focus Area</label>
+        <select class="form-input" id="focus_area" name="focus_area">
+          <option value="">— Select —</option>
+          {% for opt in ["Research Methodology", "IPR", "Entrepreneurship", "Skill Development", "IKS"] %}
+            <option value="{{ opt }}" {{ 'selected' if entry.focus_area == opt }}>{{ opt }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="date_from">Date From (DD-MM-YYYY)</label>
+          <input class="form-input" type="date" id="date_from" name="date_from"
+                 value="{{ entry.date_from.strftime('%Y-%m-%d') if entry.date_from else '' }}"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="date_to">Date To (DD-MM-YYYY)</label>
+          <input class="form-input" type="date" id="date_to" name="date_to"
+                 value="{{ entry.date_to.strftime('%Y-%m-%d') if entry.date_to else '' }}"/>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="national_international">National / International</label>
+          <select class="form-input" id="national_international" name="national_international">
+            <option value="">— Select —</option>
+            <option value="National" {{ 'selected' if entry.national_international == 'National' }}>National</option>
+            <option value="International" {{ 'selected' if entry.national_international == 'International' }}>International</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="proceedings_indexed">Conference Proceedings Indexed</label>
+          <select class="form-input" id="proceedings_indexed" name="proceedings_indexed">
+            <option value="">— Select —</option>
+            <option value="Yes" {{ 'selected' if entry.proceedings_indexed == 'Yes' }}>Yes</option>
+            <option value="No" {{ 'selected' if entry.proceedings_indexed == 'No' }}>No</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="indexing_details">
+          Indexing Details
+          <span class="form-hint">(Scopus/WoS indexed; ISSN/ISBN No., if applicable)</span>
+        </label>
+        <input class="form-input" type="text" id="indexing_details" name="indexing_details"
+               value="{{ entry.indexing_details or '' }}"/>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="certificate_link">Link to Supporting Doc (Certificate of Presentation)</label>
+        <input class="form-input" type="url" id="certificate_link" name="certificate_link"
+               value="{{ entry.certificate_link or '' }}"/>
+      </div>
+
+      <div style="display:flex;gap:12px;margin-top:24px;">
+        <button type="submit" class="btn btn-primary">Update Conference</button>
+        <a href="{{ url_for('my_conferences') }}" class="btn btn-ghost">Cancel</a>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+{% endblock %}

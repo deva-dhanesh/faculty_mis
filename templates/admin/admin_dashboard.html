@@ -1,0 +1,234 @@
+{% extends "layouts/admin_base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+
+<!-- Page header -->
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>Admin Dashboard</h1>
+    <p>Welcome back, {{ session.get('user_email') }} &mdash; here's an overview of the system.</p>
+  </div>
+  <div class="page-header-actions">
+    <a href="{{ url_for('add_faculty') }}" class="btn btn-primary">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add Faculty
+    </a>
+    <a href="{{ url_for('generate_report') }}" class="btn btn-ghost">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Download Report
+    </a>
+  </div>
+</div>
+
+<!-- KPI Stats -->
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-card-info">
+      <div class="stat-card-value">{{ faculty_count }}</div>
+      <div class="stat-card-label">Total Faculty</div>
+    </div>
+    <div class="stat-card-icon blue">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card-info">
+      <div class="stat-card-value">{{ profile_count }}</div>
+      <div class="stat-card-label">Faculty Profiles</div>
+    </div>
+    <div class="stat-card-icon green">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card-info">
+      <div class="stat-card-value">{{ publication_count }}</div>
+      <div class="stat-card-label">Publications</div>
+    </div>
+    <div class="stat-card-icon purple">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card-info">
+      <div class="stat-card-value">{{ project_count }}</div>
+      <div class="stat-card-label">Research Projects</div>
+    </div>
+    <div class="stat-card-icon amber">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22,4 12,14.01 9,11.01"/></svg>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card-info">
+      <div class="stat-card-value">{{ book_chapter_count }}</div>
+      <div class="stat-card-label">Book Chapters</div>
+    </div>
+    <div class="stat-card-icon" style="background:#e0e7ff;color:#4f46e5;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card-info">
+      <div class="stat-card-value">{{ guest_lecture_count }}</div>
+      <div class="stat-card-label">Guest Lectures</div>
+    </div>
+    <div class="stat-card-icon" style="background:#fce7f3;color:#db2777;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card-info">
+      <div class="stat-card-value">{{ patent_count }}</div>
+      <div class="stat-card-label">Patents / IP</div>
+    </div>
+    <div class="stat-card-icon" style="background:#dbeafe;color:#2563eb;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2z"/></svg>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card-info">
+      <div class="stat-card-value">{{ fellowship_count }}</div>
+      <div class="stat-card-label">Fellowships</div>
+    </div>
+    <div class="stat-card-icon" style="background:#fef3c7;color:#d97706;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card-info">
+      <div class="stat-card-value">{{ conf_participated_count + conf_organised_count }}</div>
+      <div class="stat-card-label">Conferences</div>
+    </div>
+    <div class="stat-card-icon" style="background:#e0e7ff;color:#4338ca;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card-info">
+      <div class="stat-card-value">{{ fdp_participated_count + fdp_organised_count }}</div>
+      <div class="stat-card-label">FDP Programs</div>
+    </div>
+    <div class="stat-card-icon" style="background:#fce7f3;color:#db2777;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card-info">
+      <div class="stat-card-value">{{ document_count }}</div>
+      <div class="stat-card-label">Documents</div>
+    </div>
+    <div class="stat-card-icon cyan">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+    </div>
+  </div>
+</div>
+
+<!-- Quick action cards -->
+<div class="quick-grid">
+
+  <div class="quick-card">
+    <div class="quick-card-header">
+      <div class="quick-card-icon blue" style="background:var(--primary-light);color:var(--primary);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <div>
+        <div class="quick-card-title">Faculty Management</div>
+        <div class="quick-card-subtitle">Add, view and manage faculty users</div>
+      </div>
+    </div>
+    <div class="quick-card-body">
+      <a href="{{ url_for('add_faculty') }}" class="btn btn-primary btn-sm">Add Faculty</a>
+      <a href="{{ url_for('upload_faculty_csv') }}" class="btn btn-ghost btn-sm">Upload Faculty CSV</a>
+      <a href="{{ url_for('upload_faculty_profiles_csv') }}" class="btn btn-ghost btn-sm">Upload Profiles CSV</a>
+      <a href="{{ url_for('view_faculty_profiles') }}" class="btn btn-secondary btn-sm">View All Profiles</a>
+    </div>
+  </div>
+
+  <div class="quick-card">
+    <div class="quick-card-header">
+      <div class="quick-card-icon" style="background:#ede9fe;color:#7c3aed;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      </div>
+      <div>
+        <div class="quick-card-title">Research</div>
+        <div class="quick-card-subtitle">Publications and projects</div>
+      </div>
+    </div>
+    <div class="quick-card-body">
+      <a href="{{ url_for('view_publications') }}" class="btn btn-ghost btn-sm">View Publications</a>
+      <a href="{{ url_for('view_projects') }}" class="btn btn-ghost btn-sm">View Research Projects</a>
+      <a href="{{ url_for('view_book_chapters') }}" class="btn btn-ghost btn-sm">View Book Chapters</a>
+      <a href="{{ url_for('view_guest_lectures') }}" class="btn btn-ghost btn-sm">View Guest Lectures</a>
+      <a href="{{ url_for('view_patents') }}" class="btn btn-ghost btn-sm">View Patents / IP</a>
+      <a href="{{ url_for('view_fellowships') }}" class="btn btn-ghost btn-sm">View Fellowships</a>
+      <a href="{{ url_for('view_conferences') }}" class="btn btn-ghost btn-sm">View Conferences</a>
+      <a href="{{ url_for('view_fdp_programs') }}" class="btn btn-ghost btn-sm">View FDP Programs</a>
+    </div>
+  </div>
+
+  <div class="quick-card">
+    <div class="quick-card-header">
+      <div class="quick-card-icon" style="background:var(--info-bg);color:var(--info);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+      </div>
+      <div>
+        <div class="quick-card-title">Documents</div>
+        <div class="quick-card-subtitle">Faculty uploaded documents</div>
+      </div>
+    </div>
+    <div class="quick-card-body">
+      <a href="{{ url_for('view_documents') }}" class="btn btn-ghost btn-sm">View All Documents</a>
+    </div>
+  </div>
+
+  <div class="quick-card">
+    <div class="quick-card-header">
+      <div class="quick-card-icon" style="background:var(--success-bg);color:var(--success);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      </div>
+      <div>
+        <div class="quick-card-title">Reports &amp; Exports</div>
+        <div class="quick-card-subtitle">Download data and reports</div>
+      </div>
+    </div>
+    <div class="quick-card-body">
+      <a href="{{ url_for('generate_report') }}" class="btn btn-success btn-sm">Download PDF Report</a>
+      <a href="{{ url_for('export_faculty_csv_route') }}" class="btn btn-ghost btn-sm">Export Faculty CSV</a>
+      <a href="{{ url_for('export_faculty_profiles_csv_route') }}" class="btn btn-ghost btn-sm">Export Profiles CSV</a>
+    </div>
+  </div>
+
+  <div class="quick-card">
+    <div class="quick-card-header">
+      <div class="quick-card-icon" style="background:var(--warning-bg);color:var(--warning);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg>
+      </div>
+      <div>
+        <div class="quick-card-title">Analytics</div>
+        <div class="quick-card-subtitle">Charts and statistics</div>
+      </div>
+    </div>
+    <div class="quick-card-body">
+      <a href="{{ url_for('analytics') }}" class="btn btn-warning btn-sm">Open Analytics</a>
+    </div>
+  </div>
+
+  <div class="quick-card">
+    <div class="quick-card-header">
+      <div class="quick-card-icon" style="background:var(--danger-bg);color:var(--danger);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      </div>
+      <div>
+        <div class="quick-card-title">Audit Logs</div>
+        <div class="quick-card-subtitle">System security log</div>
+      </div>
+    </div>
+    <div class="quick-card-body">
+      <a href="{{ url_for('view_audit_logs') }}" class="btn btn-danger btn-sm">View Audit Logs</a>
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}

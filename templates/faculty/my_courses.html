@@ -1,0 +1,232 @@
+{% extends "layouts/faculty_base.html" %}
+{% block title %}Value Added Programs{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>Value Added Programs</h1>
+    <p>Manage courses you have attended and courses you have offered.</p>
+  </div>
+  <div class="page-header-actions">
+    <a href="{{ url_for('bulk_upload_courses_attended') }}" class="btn btn-ghost tab-action tab-action-attended">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right:5px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      Bulk Attended
+    </a>
+    <a href="{{ url_for('add_course_attended') }}" class="btn btn-primary tab-action tab-action-attended">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right:5px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add Attended
+    </a>
+    <a href="{{ url_for('bulk_upload_courses_offered') }}" class="btn btn-ghost tab-action tab-action-offered" style="display:none;">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right:5px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      Bulk Offered
+    </a>
+    <a href="{{ url_for('add_course_offered') }}" class="btn btn-primary tab-action tab-action-offered" style="display:none;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right:5px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add Offered
+    </a>
+  </div>
+</div>
+
+<!-- Tab Navigation -->
+<div style="display:flex;gap:0;border-bottom:2px solid var(--border-color);margin-bottom:24px;">
+  <button class="vap-tab active" data-tab="attended"
+          style="padding:10px 24px;border:none;background:none;font-weight:600;font-size:14px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s;">
+    📘 Courses Attended
+    <span class="badge badge-blue" style="margin-left:6px;">{{ attended|length }}</span>
+  </button>
+  <button class="vap-tab" data-tab="offered"
+          style="padding:10px 24px;border:none;background:none;font-weight:600;font-size:14px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s;">
+    📗 Courses Offered
+    <span class="badge badge-green" style="margin-left:6px;">{{ offered|length }}</span>
+  </button>
+</div>
+
+<!-- ═══════════════════ COURSES ATTENDED ═══════════════════ -->
+<div id="tab-attended" class="vap-panel">
+  <div class="card">
+    <div class="card-header">
+      <h3>Courses Attended</h3>
+      <p>{{ attended|length }} record(s) — Certificate/Value-Added courses, MOOCs, NPTEL, SWAYAM, etc.</p>
+    </div>
+    <div class="card-body-flush">
+      {% if attended %}
+      <div class="table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Course Name / Certificate</th>
+              <th>Online Course / Platform</th>
+              <th>Duration</th>
+              <th>Mode</th>
+              <th>Contact Hrs</th>
+              <th>Offered By</th>
+              <th>Certificate</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for c in attended %}
+            <tr>
+              <td class="text-muted text-sm">{{ loop.index }}</td>
+              <td class="td-bold" style="max-width:220px;word-break:break-word;">{{ c.course_name }}</td>
+              <td style="max-width:180px;word-break:break-word;">{{ c.online_course_name or '—' }}</td>
+              <td class="text-muted text-sm" style="white-space:nowrap;">
+                {{ c.date_from.strftime("%d-%b-%Y") if c.date_from else '?' }}
+                &ndash;
+                {{ c.date_to.strftime("%d-%b-%Y") if c.date_to else '?' }}
+              </td>
+              <td>{{ c.mode or '—' }}</td>
+              <td>{{ c.contact_hours if c.contact_hours is not none else '—' }}</td>
+              <td>{{ c.offered_by or '—' }}</td>
+              <td>
+                {% if c.certificate_link %}
+                  <a href="{{ c.certificate_link }}" target="_blank" class="btn btn-ghost btn-sm">View</a>
+                {% else %}—{% endif %}
+              </td>
+              <td style="white-space:nowrap;">
+                <a href="{{ url_for('edit_course_attended', entry_id=c.id) }}" class="btn btn-ghost btn-sm">Edit</a>
+                <form method="POST" action="{{ url_for('delete_course_attended', entry_id=c.id) }}"
+                      style="display:inline;" onsubmit="return confirm('Delete this entry?');">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                  <button type="submit" class="btn btn-sm" style="color:#e53e3e;border-color:#e53e3e;background:transparent;">Delete</button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="empty-state">
+        <div class="empty-state-icon">📘</div>
+        <h3>No courses attended yet</h3>
+        <p>Add courses, MOOCs, NPTEL or SWAYAM programs you have completed.</p>
+        <div style="margin-top:20px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+          <a href="{{ url_for('add_course_attended') }}" class="btn btn-primary btn-sm">Add Course Attended</a>
+          <a href="{{ url_for('bulk_upload_courses_attended') }}" class="btn btn-ghost btn-sm">Bulk Upload</a>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ COURSES OFFERED ═══════════════════ -->
+<div id="tab-offered" class="vap-panel" style="display:none;">
+  <div class="card">
+    <div class="card-header">
+      <h3>Courses Offered</h3>
+      <p>{{ offered|length }} record(s) — Value-Added courses offered by you at the institution.</p>
+    </div>
+    <div class="card-body-flush">
+      {% if offered %}
+      <div class="table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Course Name</th>
+              <th>Program / Dept</th>
+              <th>Duration</th>
+              <th>Credits</th>
+              <th>Mode</th>
+              <th>Contact Hrs</th>
+              <th>Times Offered</th>
+              <th>Links</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for c in offered %}
+            <tr>
+              <td class="text-muted text-sm">{{ loop.index }}</td>
+              <td class="td-bold" style="max-width:200px;word-break:break-word;">{{ c.course_name }}</td>
+              <td>
+                {{ c.program_name or '—' }}
+                {% if c.department %}<br><span class="text-muted text-sm">{{ c.department }}</span>{% endif %}
+              </td>
+              <td class="text-muted text-sm" style="white-space:nowrap;">
+                {{ c.date_from.strftime("%d-%b-%Y") if c.date_from else '?' }}
+                &ndash;
+                {{ c.date_to.strftime("%d-%b-%Y") if c.date_to else '?' }}
+              </td>
+              <td>{{ c.credits_assigned or '—' }}</td>
+              <td>{{ c.mode or '—' }}</td>
+              <td>{{ c.contact_hours if c.contact_hours is not none else '—' }}</td>
+              <td style="text-align:center;">{{ c.times_offered if c.times_offered is not none else '—' }}</td>
+              <td style="white-space:nowrap;">
+                {% if c.brochure_link %}
+                  <a href="{{ c.brochure_link }}" target="_blank" class="btn btn-ghost btn-sm" title="Brochure">📄</a>
+                {% endif %}
+                {% if c.attendance_link %}
+                  <a href="{{ c.attendance_link }}" target="_blank" class="btn btn-ghost btn-sm" title="Attendance">📋</a>
+                {% endif %}
+                {% if c.certificate_link %}
+                  <a href="{{ c.certificate_link }}" target="_blank" class="btn btn-ghost btn-sm" title="Certificate">🏅</a>
+                {% endif %}
+                {% if not c.brochure_link and not c.attendance_link and not c.certificate_link %}—{% endif %}
+              </td>
+              <td style="white-space:nowrap;">
+                <a href="{{ url_for('edit_course_offered', entry_id=c.id) }}" class="btn btn-ghost btn-sm">Edit</a>
+                <form method="POST" action="{{ url_for('delete_course_offered', entry_id=c.id) }}"
+                      style="display:inline;" onsubmit="return confirm('Delete this entry?');">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                  <button type="submit" class="btn btn-sm" style="color:#e53e3e;border-color:#e53e3e;background:transparent;">Delete</button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="empty-state">
+        <div class="empty-state-icon">📗</div>
+        <h3>No courses offered yet</h3>
+        <p>Add value-added courses that you have offered to students.</p>
+        <div style="margin-top:20px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+          <a href="{{ url_for('add_course_offered') }}" class="btn btn-primary btn-sm">Add Course Offered</a>
+          <a href="{{ url_for('bulk_upload_courses_offered') }}" class="btn btn-ghost btn-sm">Bulk Upload</a>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var tabs = document.querySelectorAll('.vap-tab');
+
+  function switchTab(activeTab) {
+    var which = activeTab.dataset.tab;
+    tabs.forEach(function (t) {
+      t.classList.remove('active');
+      t.style.borderBottomColor = 'transparent';
+      t.style.color = '';
+    });
+    document.querySelectorAll('.vap-panel').forEach(function (p) {
+      p.style.display = 'none';
+    });
+    activeTab.classList.add('active');
+    activeTab.style.borderBottomColor = 'var(--primary)';
+    activeTab.style.color = 'var(--primary)';
+    document.getElementById('tab-' + which).style.display = 'block';
+    // toggle header action buttons
+    document.querySelectorAll('.tab-action').forEach(function (btn) {
+      btn.style.display = btn.classList.contains('tab-action-' + which) ? '' : 'none';
+    });
+  }
+
+  tabs.forEach(function (tab) {
+    tab.addEventListener('click', function () { switchTab(tab); });
+  });
+
+  // Activate first tab on load
+  if (tabs[0]) switchTab(tabs[0]);
+})();
+</script>
+
+{% endblock %}

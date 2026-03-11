@@ -1,0 +1,111 @@
+{% extends "layouts/faculty_base.html" %}
+{% block title %}My Book Chapters{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>My Books &amp; Chapters</h1>
+    <p>Track your published books and book chapters.</p>
+  </div>
+  <div class="page-header-actions">
+    <a href="{{ url_for('bulk_upload_book_chapters') }}" class="btn btn-ghost">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right:5px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      Bulk Upload
+    </a>
+    <a href="{{ url_for('add_book_chapter') }}" class="btn btn-primary">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add Book / Chapter
+    </a>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <h3>All Books &amp; Chapters</h3>
+    <p>{{ chapters|length if chapters else 0 }} record(s)</p>
+  </div>
+  <div class="card-body-flush">
+    {% if chapters and chapters|length > 0 %}
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Book Title</th>
+            <th>Chapter Title</th>
+            <th>Type</th>
+            <th>Scope</th>
+            <th>Date</th>
+            <th>ISBN</th>
+            <th>Publisher</th>
+            <th>DOI</th>
+            <th>Links</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% set type_badge = {
+            'Book':    'badge-blue',
+            'Chapter': 'badge-purple'
+          } %}
+          {% set scope_badge = {
+            'National':      'badge-amber',
+            'International': 'badge-green'
+          } %}
+          {% for c in chapters %}
+          <tr>
+            <td class="text-muted text-sm">{{ loop.index }}</td>
+            <td class="td-bold" style="max-width:200px;word-break:break-word;">{{ c.book_title or '—' }}</td>
+            <td style="max-width:180px;word-break:break-word;">{{ c.chapter_title or '—' }}</td>
+            <td>
+              {% if c.book_or_chapter %}
+                <span class="badge {{ type_badge.get(c.book_or_chapter, 'badge-gray') }}">{{ c.book_or_chapter }}</span>
+              {% else %}—{% endif %}
+            </td>
+            <td>
+              {% if c.national_international %}
+                <span class="badge {{ scope_badge.get(c.national_international, 'badge-gray') }}">{{ c.national_international }}</span>
+              {% else %}—{% endif %}
+            </td>
+            <td class="text-muted text-sm">{{ c.publication_date.strftime("%d-%b-%Y") if c.publication_date else '—' }}</td>
+            <td class="text-muted text-sm">{{ c.isbn or '—' }}</td>
+            <td style="max-width:160px;word-break:break-word;">{{ c.proceedings_publisher or '—' }}</td>
+            <td class="text-muted text-sm">
+              {% if c.doi %}
+                <a href="https://doi.org/{{ c.doi }}" target="_blank" title="{{ c.doi }}">{{ c.doi[:20] }}{% if c.doi|length > 20 %}…{% endif %}</a>
+              {% else %}—{% endif %}
+            </td>
+            <td style="white-space:nowrap;">
+              {% if c.journal_link %}
+                <a href="{{ c.journal_link }}" target="_blank" class="btn btn-ghost btn-sm" title="Journal">🔗</a>
+              {% endif %}
+              {% if c.supporting_doc_link %}
+                <a href="{{ c.supporting_doc_link }}" target="_blank" class="btn btn-ghost btn-sm" title="Supporting Doc">📄</a>
+              {% endif %}
+              {% if not c.journal_link and not c.supporting_doc_link %}—{% endif %}
+            </td>
+            <td style="white-space:nowrap;">
+              <a href="{{ url_for('edit_book_chapter', entry_id=c.id) }}" class="btn btn-ghost btn-sm">Edit</a>
+              <form method="POST" action="{{ url_for('delete_book_chapter', entry_id=c.id) }}" style="display:inline;" onsubmit="return confirm('Delete this entry? This cannot be undone.');">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <button type="submit" class="btn btn-sm" style="color:#e53e3e;border-color:#e53e3e;background:transparent;">Delete</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#CBD5E0" stroke-width="1.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      <h3>No books or chapters yet</h3>
+      <p>Add your first book or chapter publication to get started.</p>
+      <a href="{{ url_for('add_book_chapter') }}" class="btn btn-primary" style="margin-top:12px;">Add Book / Chapter</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

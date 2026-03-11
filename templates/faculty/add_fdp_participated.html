@@ -1,0 +1,130 @@
+{% extends "layouts/faculty_base.html" %}
+{% block title %}Add FDP Participated{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>Add FDP Participated</h1>
+    <p>Record a Faculty Development Programme you participated in.</p>
+  </div>
+  <div class="page-header-actions">
+    <a href="{{ url_for('my_fdp_programs') }}" class="btn btn-ghost">← FDP Programs</a>
+  </div>
+</div>
+
+<div class="form-card" style="max-width:860px;">
+  <div class="form-card-header">
+    <h2>FDP Participation Details</h2>
+    <p>Fill in all available details about the FDP you participated in.</p>
+  </div>
+  <div class="form-card-body">
+    <form method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+      <div class="form-group">
+        <label class="form-label" for="program_title">
+          Program Title <span style="color:red;">*</span>
+        </label>
+        <input class="form-input" type="text" id="program_title" name="program_title"
+               placeholder="e.g. FDP on Machine Learning & AI" required/>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="duration_days">Duration (No. of Days)</label>
+          <input class="form-input" type="text" id="duration_days" name="duration_days"
+                 placeholder="e.g. 5"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="program_type">Program Type</label>
+          <input class="form-input" type="text" id="program_type" name="program_type"
+                 placeholder="e.g. FDP / STTP / Workshop"/>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="start_date">Start Date (DD-MM-YYYY)</label>
+          <input class="form-input" type="date" id="start_date" name="start_date"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="end_date">End Date (DD-MM-YYYY)</label>
+          <input class="form-input" type="date" id="end_date" name="end_date"/>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="national_international">National / International</label>
+          <select class="form-input" id="national_international" name="national_international">
+            <option value="">— Select —</option>
+            <option value="National">National</option>
+            <option value="International">International</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="mode">Mode</label>
+          <select class="form-input" id="mode" name="mode">
+            <option value="">— Select —</option>
+            <option value="Online">Online</option>
+            <option value="Offline">Offline</option>
+            <option value="Hybrid">Hybrid</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="organizing_agency">Organizing / Sponsoring Agency</label>
+        <input class="form-input" type="text" id="organizing_agency" name="organizing_agency"
+               placeholder="e.g. AICTE / UGC / IIT Bombay"/>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="location">Location</label>
+        <input class="form-input" type="text" id="location" name="location"
+               placeholder="e.g. IIT Madras, Chennai"/>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="funding">Funding</label>
+          <select class="form-input" id="funding" name="funding">
+            <option value="">— Select —</option>
+            <option value="Self">Self</option>
+            <option value="Institution">Institution</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="enrolled_coursera">Enrolled in Coursera / Online Platform</label>
+          <select class="form-input" id="enrolled_coursera" name="enrolled_coursera">
+            <option value="">— Select —</option>
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="certificate_link">Certificate Link</label>
+          <input class="form-input" type="url" id="certificate_link" name="certificate_link"
+                 placeholder="https://..."/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="brochure_link">Brochure Link</label>
+          <input class="form-input" type="url" id="brochure_link" name="brochure_link"
+                 placeholder="https://..."/>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:12px;margin-top:24px;">
+        <button type="submit" class="btn btn-primary">Save FDP</button>
+        <a href="{{ url_for('my_fdp_programs') }}" class="btn btn-ghost">Cancel</a>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+{% endblock %}

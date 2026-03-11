@@ -1,0 +1,222 @@
+{% extends "layouts/faculty_base.html" %}
+{% block title %}Add Book / Chapter{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>Add Book / Chapter</h1>
+    <p>Record a new book or chapter publication.</p>
+  </div>
+  <div class="page-header-actions">
+    <a href="{{ url_for('my_book_chapters') }}" class="btn btn-ghost">← Back to My Book Chapters</a>
+  </div>
+</div>
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% for category, message in messages %}
+    <div class="alert alert-{{ category }}" style="margin-bottom:16px;">{{ message }}</div>
+  {% endfor %}
+{% endwith %}
+
+<div class="form-card" style="max-width:860px;">
+  <div class="form-card-header">
+    <h2>Book / Chapter Details</h2>
+  </div>
+  <div class="form-card-body">
+
+    <!-- DOI Auto-fetch -->
+    <div style="background:#eff6ff;border:1.5px solid #bfdbfe;border-radius:8px;padding:16px 20px;margin-bottom:24px;">
+      <div style="font-size:13px;font-weight:600;color:#1d4ed8;margin-bottom:10px;">
+        ⚡ Auto-fill from DOI
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+        <input class="form-input" type="text" id="doi_lookup" placeholder="Paste DOI — e.g. 10.1007/978-3-030-12345-6"
+               style="flex:1;min-width:220px;"/>
+        <button type="button" id="fetch_doi_btn" class="btn btn-primary" style="flex-shrink:0;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          Fetch Details
+        </button>
+      </div>
+      <div id="doi_status" style="font-size:12.5px;margin-top:8px;display:none;"></div>
+    </div>
+
+    <form method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+      <div class="form-section-title" style="font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);font-weight:600;margin-bottom:12px;">Book &amp; Chapter Information</div>
+
+      <div class="form-group">
+        <label class="form-label" for="book_title">Title of the Books Published <span style="color:red;">*</span></label>
+        <input class="form-input" type="text" id="book_title" name="book_title"
+               placeholder="e.g. Advances in Machine Learning" required/>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="chapter_title">Title of the Chapters Published</label>
+        <input class="form-input" type="text" id="chapter_title" name="chapter_title"
+               placeholder="e.g. Chapter 5: Deep Learning Techniques"/>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="book_or_chapter">Category (Book / Chapter)</label>
+          <select class="form-select" id="book_or_chapter" name="book_or_chapter">
+            <option value="">— Select —</option>
+            <option>Book</option>
+            <option>Chapter</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="internal_external">Category (Internal / External)</label>
+          <select class="form-select" id="internal_external" name="internal_external">
+            <option value="">— Select —</option>
+            <option>Internal</option>
+            <option>External</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="national_international">National / International</label>
+          <select class="form-select" id="national_international" name="national_international">
+            <option value="">— Select —</option>
+            <option>National</option>
+            <option>International</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="publication_date">Date of Publication</label>
+          <input class="form-input" type="date" id="publication_date" name="publication_date"/>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="translated_title">Title of Books Translated into Bhartiya Bhasha</label>
+        <input class="form-input" type="text" id="translated_title" name="translated_title"
+               placeholder="e.g. मशीन लर्निंग में प्रगति"/>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="proceedings_publisher">Title of the Conference Proceedings / Publisher</label>
+        <input class="form-input" type="text" id="proceedings_publisher" name="proceedings_publisher"
+               placeholder="e.g. Springer Nature / IEEE Proceedings"/>
+      </div>
+
+      <div class="form-section-title" style="font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);font-weight:600;margin:20px 0 12px;">Additional Details</div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="isbn">ISBN Number</label>
+          <input class="form-input" type="text" id="isbn" name="isbn"
+                 placeholder="e.g. 978-3-16-148410-0"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="doi">DOI (if available)</label>
+          <input class="form-input" type="text" id="doi" name="doi"
+                 placeholder="e.g. 10.1007/978-3-030-12345-6"/>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="co_authors">Co-authors (if any)</label>
+        <input class="form-input" type="text" id="co_authors" name="co_authors"
+               placeholder="e.g. Dr. A. Kumar, Dr. B. Singh"/>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="indexed_in">Indexed in Databases (Please specify)</label>
+        <input class="form-input" type="text" id="indexed_in" name="indexed_in"
+               placeholder="e.g. Scopus, Web of Science, Google Scholar"/>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="journal_link">Link to Journal Source / Cite Website</label>
+        <input class="form-input" type="url" id="journal_link" name="journal_link"
+               placeholder="https://link.springer.com/..."/>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="supporting_doc_link">Supporting Doc Link</label>
+        <input class="form-input" type="url" id="supporting_doc_link" name="supporting_doc_link"
+               placeholder="https://drive.google.com/..."/>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Add Book / Chapter</button>
+        <a href="{{ url_for('my_book_chapters') }}" class="btn btn-ghost">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+document.getElementById('fetch_doi_btn').addEventListener('click', function () {
+  var doi = document.getElementById('doi_lookup').value.trim();
+  var status = document.getElementById('doi_status');
+  if (!doi) { return; }
+
+  var btn = this;
+  btn.disabled = true;
+  btn.textContent = 'Fetching…';
+  status.style.display = 'block';
+  status.style.color = '#64748b';
+  status.textContent = 'Looking up DOI via CrossRef…';
+
+  fetch('/api/fetch_doi?doi=' + encodeURIComponent(doi))
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.error) {
+        status.style.color = '#dc2626';
+        status.textContent = '✖ ' + data.error + '. Please fill in the details manually.';
+      } else {
+        if (data.title)     document.getElementById('book_title').value     = data.title;
+        if (data.publisher) document.getElementById('proceedings_publisher').value = data.publisher;
+        if (data.doi)       document.getElementById('doi').value            = data.doi;
+        if (data.authors)   document.getElementById('co_authors').value     = data.authors;
+
+        // Prefer ISBN for books; fall back to ISSN
+        var isbnVal = data.isbn || data.issn_isbn || '';
+        if (isbnVal) document.getElementById('isbn').value = isbnVal;
+
+        // Auto-detect Book vs Chapter from CrossRef type
+        if (data.type) {
+          var sel = document.getElementById('book_or_chapter');
+          if (data.type.indexOf('chapter') !== -1) { sel.value = 'Chapter'; }
+          else if (data.type.indexOf('book') !== -1) { sel.value = 'Book'; }
+        }
+
+        if (data.pub_date) {
+          try {
+            var d = new Date(data.pub_date);
+            if (!isNaN(d)) {
+              document.getElementById('publication_date').value = d.toISOString().split('T')[0];
+            }
+          } catch(e) {}
+        }
+
+        // Build a journal source link from DOI
+        if (data.doi && !document.getElementById('journal_link').value) {
+          document.getElementById('journal_link').value = 'https://doi.org/' + data.doi;
+        }
+
+        status.style.color = '#16a34a';
+        status.textContent = '✔ Details filled in from CrossRef. Review and complete any remaining fields.';
+      }
+    })
+    .catch(function() {
+      status.style.color = '#dc2626';
+      status.textContent = '✖ Could not reach CrossRef. Please fill in the details manually.';
+    })
+    .finally(function() {
+      btn.disabled = false;
+      btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Fetch Details';
+    });
+});
+
+// Allow pressing Enter in DOI lookup field
+document.getElementById('doi_lookup').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') { e.preventDefault(); document.getElementById('fetch_doi_btn').click(); }
+});
+</script>
+
+{% endblock %}

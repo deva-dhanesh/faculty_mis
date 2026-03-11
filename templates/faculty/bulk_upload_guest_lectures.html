@@ -1,0 +1,92 @@
+{% extends "layouts/faculty_base.html" %}
+{% block title %}Bulk Upload — Guest Lectures{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>Bulk Upload — Guest Lectures</h1>
+    <p>Import multiple guest lecture records at once using an Excel or CSV file.</p>
+  </div>
+  <div class="page-header-actions">
+    <a href="{{ url_for('my_guest_lectures') }}" class="btn btn-ghost">← My Guest Lectures</a>
+  </div>
+</div>
+
+<!-- Step 1 -->
+<div class="card" style="max-width:720px;margin-bottom:20px;">
+  <div class="card-header">
+    <h3>Step 1 — Download the Template</h3>
+    <p>Fill in your guest lectures using the provided Excel template.</p>
+  </div>
+  <div class="card-body" style="padding:20px 24px;">
+    <p style="font-size:14px;color:var(--text-muted);margin-bottom:16px;">
+      The template has the correct column headers, a sample row, and dropdowns for
+      <strong>JAIN / Outside</strong>, <strong>Mode</strong>, and <strong>Audience Type</strong>.
+      Delete the sample row before uploading.
+    </p>
+    <a href="{{ url_for('bulk_template', kind='guest_lectures') }}" class="btn btn-primary">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right:6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Download Excel Template
+    </a>
+    <div style="margin-top:16px;background:var(--bg-page);border-radius:8px;padding:14px 16px;font-size:13px;">
+      <strong>Template columns:</strong>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;">
+        {% for col in ["Lecture Title / Topic Delivered *", "Organization & Location",
+                       "Date (YYYY-MM-DD)", "JAIN / Outside",
+                       "Mode (In-person / Online)", "Audience Type (Students / Faculty / Industry)",
+                       "Link to Brochure / Weblink",
+                       "Link to Supporting Document"] %}
+          <span class="badge badge-gray" style="font-size:11px;">{{ col }}</span>
+        {% endfor %}
+      </div>
+      <p style="margin-top:10px;color:var(--text-muted);font-size:12px;">
+        * = required &nbsp;|&nbsp; Accepted formats: <strong>.xlsx, .xls, .csv</strong>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- Step 2 -->
+<div class="card" style="max-width:720px;">
+  <div class="card-header">
+    <h3>Step 2 — Upload Filled File</h3>
+    <p>Upload your completed Excel or CSV file.</p>
+  </div>
+  <div class="card-body" style="padding:20px 24px;">
+    <form method="POST" enctype="multipart/form-data">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+      <div class="form-group">
+        <label class="form-label">Select File</label>
+        <label class="upload-area" for="file" style="padding:28px 16px;" id="dropZone">
+          <div style="font-size:32px;margin-bottom:8px;">📊</div>
+          <p><strong>Click to browse</strong> or drag &amp; drop</p>
+          <p style="font-size:12px;margin-top:6px;color:var(--text-muted);">
+            Supported: <strong>.xlsx, .xls, .csv</strong> — Max 10 MB
+          </p>
+          <input type="file" id="file" name="file" accept=".xlsx,.xls,.csv"
+                 onchange="updateFileLabel(this)" style="display:none;"/>
+        </label>
+        <div id="fileLabel" class="form-hint" style="margin-top:8px;font-size:13px;"></div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Import Guest Lectures</button>
+        <a href="{{ url_for('my_guest_lectures') }}" class="btn btn-ghost">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+function updateFileLabel(input) {
+  var label = document.getElementById('fileLabel');
+  if (input.files && input.files[0]) {
+    label.textContent = '📎 ' + input.files[0].name;
+    label.style.color = 'var(--primary)';
+  }
+}
+</script>
+
+{% endblock %}
