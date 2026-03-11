@@ -1,10 +1,10 @@
 name: Deploy to Server
 
 on:
-  workflow_dispatch:  # Allow manual triggering of the workflow from the GitHub Actions tab
-  push:
-    branches:
-      - main  # Trigger on pushes to the main branch
+  workflow_dispatch: # Allow manual triggering of the workflow from the GitHub Actions tab
+  # push:
+  #   branches:
+  #     - main  # Trigger on pushes to the main branch
 
 jobs:
   deploy:
@@ -16,6 +16,6 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: fet
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          # The script value doesn't strictly matter if you use the 
+          # The script value doesn't strictly matter if you use the
           # 'command' restriction in authorized_keys, but this is a good fallback.
           script: /home/fet/all-projects/faculty_mis/deploy.sh
