@@ -12,6 +12,9 @@ The app will be reachable at:
 from waitress import serve
 from app import app
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 HOST = os.environ.get("HOST", "0.0.0.0")
 PORT = int(os.environ.get("PORT", 5000))
