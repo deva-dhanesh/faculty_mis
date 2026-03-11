@@ -4429,5 +4429,9 @@ with app.app_context():
 # =========================================================
 
 if __name__ == "__main__":
-    debug_mode = os.environ.get("FLASK_DEBUG", "false").lower() == "true"
-    app.run(debug=debug_mode)
+    HOST = os.environ.get("HOST", "0.0.0.0")
+    PORT = int(os.environ.get("PORT", 6201))
+    THREADS = int(os.environ.get("THREADS", 4))
+    print(f"[waitress] Serving on http://{HOST}:{PORT} (threads={THREADS})")
+    from waitress import serve
+    serve(app, host=HOST, port=PORT, threads=THREADS)
