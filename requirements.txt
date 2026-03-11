@@ -1,0 +1,33 @@
+# Flask Framework & Extensions
+Flask==3.1.2
+Flask-Login==0.6.3
+Flask-Mail==0.10.0
+Flask-SQLAlchemy==3.1.1
+Flask-WTF==1.2.2
+Flask-Limiter==4.1.1
+Werkzeug==3.1.5
+
+# Database
+SQLAlchemy==2.0.46
+psycopg2-binary==2.9.11
+
+# Security & Password Hashing
+bcrypt==5.0.0
+PyJWT==2.11.0
+
+# Data Processing & Export
+pandas==3.0.0
+openpyxl==3.1.5
+reportlab==4.4.9
+
+# HTTP & Utilities
+requests==2.32.5
+python-dotenv==1.2.1
+
+# WSGI Server
+waitress==3.0.2
+
+# Utilities
+click==8.3.1
+python-dateutil==2.9.0.post0
+PIL==10.2.0
