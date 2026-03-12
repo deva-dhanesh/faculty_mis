@@ -541,10 +541,20 @@ def generate_faculty_report():
         user = User.query.get(user_id)
         
         # Generate all report components
-        charts = generate_charts(user_id, selected_features)
-        interpretation = generate_interpretation(user_id, selected_features)
+        print(f"[REPORT] Starting report generation for user {user_id} with features: {selected_features}")
+        
         summary = compile_summary(user_id, selected_features)
+        print(f"[REPORT] Compiled summary")
+        
+        interpretation = generate_interpretation(user_id, selected_features)
+        print(f"[REPORT] Generated interpretation")
+        
         detailed_stats = generate_detailed_stats(user_id, selected_features)
+        print(f"[REPORT] Generated detailed stats")
+        
+        charts = generate_charts(user_id, selected_features)
+        print(f"[REPORT] Generated {len(charts)} chart(s)")
+        
         current_date = datetime.now().strftime("%d %B %Y")
         
         log_action(f"Faculty generated report with features: {', '.join(selected_features)}")
@@ -552,6 +562,7 @@ def generate_faculty_report():
         # If PDF requested, generate and send PDF
         if report_format.startswith("pdf"):
             try:
+                print(f"[REPORT] Generating PDF report")
                 pdf_filename = generate_pdf_report(
                     user=user,
                     features=selected_features,
@@ -560,12 +571,15 @@ def generate_faculty_report():
                     detailed_stats=detailed_stats,
                     current_date=current_date
                 )
+                print(f"[REPORT] PDF generated: {pdf_filename}")
                 return send_file(pdf_filename, as_attachment=True, download_name=f"Academic_Report_{user_id}.pdf")
             except Exception as e:
+                print(f"[REPORT] PDF Error: {str(e)}")
                 flash(f"Error generating PDF: {str(e)}", "error")
                 return redirect(url_for("generate_report_page"))
         else:
             # Return HTML report
+            print(f"[REPORT] Rendering HTML report")
             return render_template(
                 "faculty/view_report.html",
                 charts=charts,
@@ -577,6 +591,9 @@ def generate_faculty_report():
             )
     
     except Exception as e:
+        print(f"[REPORT] Error: {str(e)}")
+        import traceback
+        traceback.print_exc()
         flash(f"Error generating report: {str(e)}", "error")
         return redirect(url_for("generate_report_page"))
 

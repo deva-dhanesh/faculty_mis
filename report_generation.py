@@ -184,40 +184,84 @@ def generate_project_chart(user_id):
     return fig.to_html(div_id="proj_chart", include_plotlyjs=False)
 
 
-def generate_activity_chart(user_id):
+def generate_activity_chart(user_id, features=None):
     """Generate activity comparison chart"""
-    data_dict = {
-        'Publications': FacultyPublication.query.filter_by(user_id=user_id).count(),
-        'Projects': FacultyProject.query.filter_by(user_id=user_id).count(),
-        'Books': FacultyBookChapter.query.filter_by(user_id=user_id).count(),
-        'Patents': FacultyPatent.query.filter_by(user_id=user_id).count(),
-        'Awards': FacultyAward.query.filter_by(user_id=user_id).count(),
-        'Conferences': (ConferenceParticipated.query.filter_by(user_id=user_id).count() + 
-                       ConferenceOrganised.query.filter_by(user_id=user_id).count()),
-        'FDP': (FDPParticipated.query.filter_by(user_id=user_id).count() + 
-               FDPOrganised.query.filter_by(user_id=user_id).count()),
-    }
+    try:
+        data_dict = {}
+        
+        if features is None:
+            features = []
+        
+        # Only query data for selected features
+        if 'publications' in features:
+            data_dict['Publications'] = FacultyPublication.query.filter_by(user_id=user_id).count()
+        
+        if 'projects' in features:
+            data_dict['Projects'] = FacultyProject.query.filter_by(user_id=user_id).count()
+        
+        if 'books' in features:
+            data_dict['Books'] = FacultyBookChapter.query.filter_by(user_id=user_id).count()
+        
+        if 'patents' in features:
+            data_dict['Patents'] = FacultyPatent.query.filter_by(user_id=user_id).count()
+        
+        if 'awards' in features:
+            data_dict['Awards'] = FacultyAward.query.filter_by(user_id=user_id).count()
+        
+        if 'conferences' in features:
+            conf_total = (ConferenceParticipated.query.filter_by(user_id=user_id).count() + 
+                         ConferenceOrganised.query.filter_by(user_id=user_id).count())
+            if conf_total > 0:
+                data_dict['Conferences'] = conf_total
+        
+        if 'fdp' in features:
+            fdp_total = (FDPParticipated.query.filter_by(user_id=user_id).count() + 
+                        FDPOrganised.query.filter_by(user_id=user_id).count())
+            if fdp_total > 0:
+                data_dict['FDP'] = fdp_total
+        
+        if 'courses' in features:
+            courses_total = (CourseAttended.query.filter_by(user_id=user_id).count() + 
+                           CourseOffered.query.filter_by(user_id=user_id).count())
+            if courses_total > 0:
+                data_dict['Courses'] = courses_total
+        
+        if 'guest_lectures' in features:
+            gl_count = FacultyGuestLecture.query.filter_by(user_id=user_id).count()
+            if gl_count > 0:
+                data_dict['Guest Lectures'] = gl_count
+        
+        if 'fellowships' in features:
+            f_count = FacultyFellowship.query.filter_by(user_id=user_id).count()
+            if f_count > 0:
+                data_dict['Fellowships'] = f_count
+        
+        # Filter out zero values
+        data_dict = {k: v for k, v in data_dict.items() if v > 0}
+        
+        if not data_dict:
+            return None
+        
+        fig = go.Figure(data=[
+            go.Bar(x=list(data_dict.keys()), y=list(data_dict.values()),
+                   marker=dict(color='#2563eb', opacity=0.8))
+        ])
+        fig.update_layout(
+            title="Overall Academic Activity Summary",
+            xaxis_title="Activity Type",
+            yaxis_title="Count",
+            height=400,
+            hovermode='x unified',
+            margin=dict(l=40, r=20, t=40, b=40),
+            xaxis_tickangle=-45,
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)'
+        )
+        return fig.to_html(div_id="activity_chart", include_plotlyjs=False)
     
-    # Filter out zero values
-    data_dict = {k: v for k, v in data_dict.items() if v > 0}
-    
-    if not data_dict:
+    except Exception as e:
+        print(f"Error in generate_activity_chart: {e}")
         return None
-    
-    fig = go.Figure(data=[
-        go.Bar(x=list(data_dict.keys()), y=list(data_dict.values()),
-               marker=dict(color='#2563eb', opacity=0.8))
-    ])
-    fig.update_layout(
-        title="Overall Academic Activity Summary",
-        xaxis_title="Activity Type",
-        yaxis_title="Count",
-        height=400,
-        hovermode='x unified',
-        margin=dict(l=40, r=20, t=40, b=40),
-        xaxis_tickangle=-45
-    )
-    return fig.to_html(div_id="activity_chart", include_plotlyjs=False)
 
 
 def generate_interpretation(user_id, features):
@@ -225,87 +269,88 @@ def generate_interpretation(user_id, features):
     
     interpretation = "<div style='color:#475569;line-height:1.8;'>"
     
-    if 'publications' in features:
-        pubs_count = FacultyPublication.query.filter_by(user_id=user_id).count()
-        if pubs_count > 0:
-            pubs = FacultyPublication.query.filter_by(user_id=user_id).all()
-            q1_count = sum(1 for p in pubs if p.journal_quartile == 'Q1')
-            q2_count = sum(1 for p in pubs if p.journal_quartile == 'Q2')
-            
-            interpretation += f"""
-            <p><strong>Publication Profile:</strong> You have published <strong>{pubs_count} research articles</strong> 
-            across various journals. """
-            
-            if q1_count > 0:
-                interpretation += f"Of these, {q1_count} are in Q1-ranked journals. "
-            if q2_count > 0:
-                interpretation += f"{q2_count} are in Q2-ranked journals. "
-            
-            interpretation += "This demonstrates a strong research output with focus on high-quality publications.</p>"
-    
-    if 'projects' in features:
-        proj_count = FacultyProject.query.filter_by(user_id=user_id).count()
-        if proj_count > 0:
-            ongoing = FacultyProject.query.filter_by(user_id=user_id, status='Ongoing').count()
-            completed = FacultyProject.query.filter_by(user_id=user_id, status='Completed').count()
-            
-            interpretation += f"""
-            <p><strong>Research Projects:</strong> You are managing <strong>{proj_count} research projects</strong>. """
-            
-            if ongoing > 0:
-                interpretation += f"Currently, {ongoing} project(s) are ongoing "
-            if completed > 0:
-                interpretation += f"and {completed} have been completed, "
-            
-            interpretation += "reflecting consistent research activity and successful project completion.</p>"
-    
-    if 'books' in features:
-        books_count = FacultyBookChapter.query.filter_by(user_id=user_id).count()
-        if books_count > 0:
-            interpretation += f"""
-            <p><strong>Books & Book Chapters:</strong> You have contributed <strong>{books_count} book chapters</strong> 
-            to scholarly publications, demonstrating expertise in presenting research in comprehensive formats.</p>"""
-    
-    if 'patents' in features:
-        patents_count = FacultyPatent.query.filter_by(user_id=user_id).count()
-        if patents_count > 0:
-            interpretation += f"""
-            <p><strong>Patents & Innovations:</strong> You hold <strong>{patents_count} patent(s)</strong>, 
-            indicating contribution to innovation and technology development.</p>"""
-    
-    if 'awards' in features:
-        awards_count = FacultyAward.query.filter_by(user_id=user_id).count()
-        if awards_count > 0:
-            interpretation += f"""
-            <p><strong>Awards & Recognition:</strong> You have received <strong>{awards_count} award(s)</strong> 
-            and recognitions, reflecting your contributions to academia and research.</p>"""
-    
-    if 'conferences' in features:
-        conf_count = ConferenceParticipated.query.filter_by(user_id=user_id).count()
-        conf_org_count = ConferenceOrganised.query.filter_by(user_id=user_id).count()
+    try:
+        if 'publications' in features:
+            pubs_count = FacultyPublication.query.filter_by(user_id=user_id).count()
+            if pubs_count > 0:
+                pubs = FacultyPublication.query.filter_by(user_id=user_id).all()
+                q1_count = sum(1 for p in pubs if p.journal_quartile == 'Q1')
+                q2_count = sum(1 for p in pubs if p.journal_quartile == 'Q2')
+                
+                interpretation += f"<p><strong>Publication Profile:</strong> You have published <strong>{pubs_count} research articles</strong>."
+                
+                if q1_count > 0:
+                    interpretation += f" {q1_count} are in Q1-ranked journals."
+                if q2_count > 0:
+                    interpretation += f" {q2_count} are in Q2-ranked journals."
+                
+                interpretation += " This demonstrates strong research output.</p>"
         
-        if conf_count > 0 or conf_org_count > 0:
-            interpretation += f"""
-            <p><strong>Conference Engagement:</strong> You have participated in <strong>{conf_count} conference(s)</strong> 
-            and organized {conf_org_count} conference(s), demonstrating active involvement in the academic community.</p>"""
-    
-    if 'fdp' in features:
-        fdp_count = FDPParticipated.query.filter_by(user_id=user_id).count()
-        fdp_org_count = FDPOrganised.query.filter_by(user_id=user_id).count()
+        if 'projects' in features:
+            proj_count = FacultyProject.query.filter_by(user_id=user_id).count()
+            if proj_count > 0:
+                ongoing = FacultyProject.query.filter_by(user_id=user_id, status='Ongoing').count()
+                completed = FacultyProject.query.filter_by(user_id=user_id, status='Completed').count()
+                
+                interpretation += f"<p><strong>Research Projects:</strong> You manage <strong>{proj_count} research projects</strong>."
+                
+                if ongoing > 0:
+                    interpretation += f" {ongoing} are ongoing."
+                if completed > 0:
+                    interpretation += f" {completed} completed."
+                
+                interpretation += "</p>"
         
-        if fdp_count > 0 or fdp_org_count > 0:
-            interpretation += f"""
-            <p><strong>Faculty Development:</strong> You have attended <strong>{fdp_count} FDP program(s)</strong> 
-            and organized {fdp_org_count} FDP(s), showing commitment to continuous professional development.</p>"""
+        if 'books' in features:
+            books_count = FacultyBookChapter.query.filter_by(user_id=user_id).count()
+            if books_count > 0:
+                interpretation += f"<p><strong>Books & Chapters:</strong> You contributed <strong>{books_count} book chapters</strong> demonstrating expertise in comprehensive scholarly formats.</p>"
+        
+        if 'patents' in features:
+            patents_count = FacultyPatent.query.filter_by(user_id=user_id).count()
+            if patents_count > 0:
+                interpretation += f"<p><strong>Patents:</strong> You hold <strong>{patents_count} patent(s)</strong>, showing innovation and technology development.</p>"
+        
+        if 'awards' in features:
+            awards_count = FacultyAward.query.filter_by(user_id=user_id).count()
+            if awards_count > 0:
+                interpretation += f"<p><strong>Awards:</strong> You received <strong>{awards_count} award(s)</strong> reflecting your academic contributions.</p>"
+        
+        if 'conferences' in features:
+            conf_count = ConferenceParticipated.query.filter_by(user_id=user_id).count()
+            conf_org_count = ConferenceOrganised.query.filter_by(user_id=user_id).count()
+            
+            if conf_count > 0 or conf_org_count > 0:
+                interpretation += f"<p><strong>Conferences:</strong> You participated in <strong>{conf_count} conference(s)</strong> and organized <strong>{conf_org_count}</strong>, demonstrating active community involvement.</p>"
+        
+        if 'fdp' in features:
+            fdp_count = FDPParticipated.query.filter_by(user_id=user_id).count()
+            fdp_org_count = FDPOrganised.query.filter_by(user_id=user_id).count()
+            
+            if fdp_count > 0 or fdp_org_count > 0:
+                interpretation += f"<p><strong>Faculty Development:</strong> You attended <strong>{fdp_count} FDP program(s)</strong> and organized <strong>{fdp_org_count}</strong>, showing commitment to professional development.</p>"
+        
+        if 'courses' in features:
+            courses_att = CourseAttended.query.filter_by(user_id=user_id).count()
+            courses_off = CourseOffered.query.filter_by(user_id=user_id).count()
+            
+            if courses_att > 0 or courses_off > 0:
+                interpretation += f"<p><strong>Courses:</strong> You attended <strong>{courses_att} course(s)</strong> and offered <strong>{courses_off}</strong>, contributing to curriculum leadership.</p>"
+        
+        if 'guest_lectures' in features:
+            gl_count = FacultyGuestLecture.query.filter_by(user_id=user_id).count()
+            if gl_count > 0:
+                interpretation += f"<p><strong>Guest Lectures:</strong> You delivered <strong>{gl_count} guest lecture(s)</strong> sharing expertise with broader academic audiences.</p>"
+        
+        if 'fellowships' in features:
+            f_count = FacultyFellowship.query.filter_by(user_id=user_id).count()
+            if f_count > 0:
+                interpretation += f"<p><strong>Fellowships:</strong> You received <strong>{f_count} fellowship(s)</strong>, recognizing your scholarly excellence.</p>"
     
-    interpretation += """
-            <p style='margin-top:16px;padding-top:16px;border-top:1px solid #e2e8f0;color:#64748b;font-size:13px;'>
-            <strong>Overall Assessment:</strong> Your profile demonstrates consistent academic engagement across multiple dimensions. 
-            The diversity of activities—from publications and projects to conferences and professional development—
-            indicates a well-rounded contribution to academic and research excellence.
-            </p>
-            </div>
-    """
+    except Exception as e:
+        interpretation += f"<p style='color:red;'>Error: {str(e)}</p>"
+    
+    interpretation += "<p style='margin-top:16px;padding-top:16px;border-top:1px solid #e2e8f0;color:#64748b;font-size:13px;'><strong>Overall:</strong> Your profile demonstrates consistent academic engagement across multiple dimensions.</p></div>"
     
     return interpretation
 
@@ -314,30 +359,46 @@ def compile_summary(user_id, features):
     """Compile summary statistics"""
     summary = {}
     
-    if 'publications' in features:
-        summary['total_publications'] = FacultyPublication.query.filter_by(user_id=user_id).count()
+    try:
+        if 'publications' in features:
+            summary['total_publications'] = FacultyPublication.query.filter_by(user_id=user_id).count()
+        
+        if 'projects' in features:
+            summary['total_projects'] = FacultyProject.query.filter_by(user_id=user_id).count()
+        
+        if 'books' in features:
+            summary['total_books'] = FacultyBookChapter.query.filter_by(user_id=user_id).count()
+        
+        if 'patents' in features:
+            summary['total_patents'] = FacultyPatent.query.filter_by(user_id=user_id).count()
+        
+        if 'awards' in features:
+            summary['total_awards'] = FacultyAward.query.filter_by(user_id=user_id).count()
+        
+        if 'conferences' in features:
+            conf_part = ConferenceParticipated.query.filter_by(user_id=user_id).count()
+            conf_org = ConferenceOrganised.query.filter_by(user_id=user_id).count()
+            summary['total_conferences'] = conf_part + conf_org
+        
+        if 'fdp' in features:
+            fdp_part = FDPParticipated.query.filter_by(user_id=user_id).count()
+            fdp_org = FDPOrganised.query.filter_by(user_id=user_id).count()
+            summary['total_fdp'] = fdp_part + fdp_org
+        
+        if 'courses' in features:
+            courses_att = CourseAttended.query.filter_by(user_id=user_id).count()
+            courses_off = CourseOffered.query.filter_by(user_id=user_id).count()
+            summary['total_courses'] = courses_att + courses_off
+        
+        if 'guest_lectures' in features:
+            summary['total_guest_lectures'] = FacultyGuestLecture.query.filter_by(user_id=user_id).count()
+        
+        if 'fellowships' in features:
+            summary['total_fellowships'] = FacultyFellowship.query.filter_by(user_id=user_id).count()
     
-    if 'projects' in features:
-        summary['total_projects'] = FacultyProject.query.filter_by(user_id=user_id).count()
-    
-    if 'books' in features:
-        summary['total_books'] = FacultyBookChapter.query.filter_by(user_id=user_id).count()
-    
-    if 'patents' in features:
-        summary['total_patents'] = FacultyPatent.query.filter_by(user_id=user_id).count()
-    
-    if 'awards' in features:
-        summary['total_awards'] = FacultyAward.query.filter_by(user_id=user_id).count()
-    
-    if 'conferences' in features:
-        conf_part = ConferenceParticipated.query.filter_by(user_id=user_id).count()
-        conf_org = ConferenceOrganised.query.filter_by(user_id=user_id).count()
-        summary['total_conferences'] = conf_part + conf_org
-    
-    if 'fdp' in features:
-        fdp_part = FDPParticipated.query.filter_by(user_id=user_id).count()
-        fdp_org = FDPOrganised.query.filter_by(user_id=user_id).count()
-        summary['total_fdp'] = fdp_part + fdp_org
+    except Exception as e:
+        print(f"Error in compile_summary: {e}")
+        pass
     
     return summary
 
@@ -346,20 +407,31 @@ def generate_charts(user_id, features):
     """Generate all relevant charts"""
     charts = []
     
-    # Activity overview chart (always include if any feature is selected)
-    activity_chart = generate_activity_chart(user_id)
-    if activity_chart:
-        charts.append(activity_chart)
+    try:
+        # Only generate activity chart if there's data
+        pub_count = FacultyPublication.query.filter_by(user_id=user_id).count() if 'publications' in features else 0
+        proj_count = FacultyProject.query.filter_by(user_id=user_id).count() if 'projects' in features else 0
+        
+        # Only show charts if there's actual data
+        if pub_count > 0:
+            pub_chart = generate_publication_chart(user_id)
+            if pub_chart:
+                charts.append(pub_chart)
+        
+        if proj_count > 0:
+            proj_chart = generate_project_chart(user_id)
+            if proj_chart:
+                charts.append(proj_chart)
+        
+        # Only include activity chart if multiple data points exist
+        if len(features) > 0:
+            activity_chart = generate_activity_chart(user_id, features)
+            if activity_chart:
+                charts.insert(0, activity_chart)  # Insert at beginning
     
-    if 'publications' in features:
-        pub_chart = generate_publication_chart(user_id)
-        if pub_chart:
-            charts.append(pub_chart)
-    
-    if 'projects' in features:
-        proj_chart = generate_project_chart(user_id)
-        if proj_chart:
-            charts.append(proj_chart)
+    except Exception as e:
+        print(f"Error in generate_charts: {e}")
+        pass
     
     return charts
 
@@ -368,43 +440,82 @@ def generate_detailed_stats(user_id, features):
     """Generate detailed statistics for each category"""
     detailed = {}
     
-    if 'publications' in features:
-        pubs = FacultyPublication.query.filter_by(user_id=user_id).all()
-        if pubs:
-            detailed['Publications'] = {
-                'Total Count': len(pubs),
-                'Q1 Journals': sum(1 for p in pubs if p.journal_quartile == 'Q1'),
-                'Q2 Journals': sum(1 for p in pubs if p.journal_quartile == 'Q2'),
-                'Q3 Journals': sum(1 for p in pubs if p.journal_quartile == 'Q3'),
-                'Q4 Journals': sum(1 for p in pubs if p.journal_quartile == 'Q4'),
-            }
+    try:
+        if 'publications' in features:
+            pubs = FacultyPublication.query.filter_by(user_id=user_id).all()
+            if pubs:
+                detailed['Publications'] = {
+                    'Total': len(pubs),
+                    'Q1': sum(1 for p in pubs if p.journal_quartile == 'Q1'),
+                    'Q2': sum(1 for p in pubs if p.journal_quartile == 'Q2'),
+                    'Q3': sum(1 for p in pubs if p.journal_quartile == 'Q3'),
+                    'Q4': sum(1 for p in pubs if p.journal_quartile == 'Q4'),
+                }
+        
+        if 'projects' in features:
+            projs = FacultyProject.query.filter_by(user_id=user_id).all()
+            if projs:
+                detailed['Projects'] = {
+                    'Total': len(projs),
+                    'Ongoing': sum(1 for p in projs if p.status == 'Ongoing'),
+                    'Completed': sum(1 for p in projs if p.status == 'Completed'),
+                }
+        
+        if 'books' in features:
+            books_count = FacultyBookChapter.query.filter_by(user_id=user_id).count()
+            if books_count > 0:
+                detailed['Books & Chapters'] = {'Total': books_count}
+        
+        if 'patents' in features:
+            patents_count = FacultyPatent.query.filter_by(user_id=user_id).count()
+            if patents_count > 0:
+                detailed['Patents'] = {'Total': patents_count}
+        
+        if 'awards' in features:
+            awards_count = FacultyAward.query.filter_by(user_id=user_id).count()
+            if awards_count > 0:
+                detailed['Awards'] = {'Total': awards_count}
+        
+        if 'conferences' in features:
+            conf_part = ConferenceParticipated.query.filter_by(user_id=user_id).count()
+            conf_org = ConferenceOrganised.query.filter_by(user_id=user_id).count()
+            if conf_part > 0 or conf_org > 0:
+                detailed['Conferences'] = {
+                    'Participated': conf_part,
+                    'Organized': conf_org,
+                }
+        
+        if 'fdp' in features:
+            fdp_part = FDPParticipated.query.filter_by(user_id=user_id).count()
+            fdp_org = FDPOrganised.query.filter_by(user_id=user_id).count()
+            if fdp_part > 0 or fdp_org > 0:
+                detailed['FDP Programs'] = {
+                    'Participated': fdp_part,
+                    'Organized': fdp_org,
+                }
+        
+        if 'courses' in features:
+            courses_att = CourseAttended.query.filter_by(user_id=user_id).count()
+            courses_off = CourseOffered.query.filter_by(user_id=user_id).count()
+            if courses_att > 0 or courses_off > 0:
+                detailed['Courses'] = {
+                    'Attended': courses_att,
+                    'Offered': courses_off,
+                }
+        
+        if 'guest_lectures' in features:
+            gl_count = FacultyGuestLecture.query.filter_by(user_id=user_id).count()
+            if gl_count > 0:
+                detailed['Guest Lectures'] = {'Total': gl_count}
+        
+        if 'fellowships' in features:
+            f_count = FacultyFellowship.query.filter_by(user_id=user_id).count()
+            if f_count > 0:
+                detailed['Fellowships'] = {'Total': f_count}
     
-    if 'projects' in features:
-        projs = FacultyProject.query.filter_by(user_id=user_id).all()
-        if projs:
-            detailed['Projects'] = {
-                'Total Count': len(projs),
-                'Ongoing': sum(1 for p in projs if p.status == 'Ongoing'),
-                'Completed': sum(1 for p in projs if p.status == 'Completed'),
-            }
-    
-    if 'conferences' in features:
-        detailed['Conferences'] = {
-            'Participated': ConferenceParticipated.query.filter_by(user_id=user_id).count(),
-            'Organized': ConferenceOrganised.query.filter_by(user_id=user_id).count(),
-        }
-    
-    if 'fdp' in features:
-        detailed['FDP Programs'] = {
-            'Participated': FDPParticipated.query.filter_by(user_id=user_id).count(),
-            'Organized': FDPOrganised.query.filter_by(user_id=user_id).count(),
-        }
-    
-    if 'courses' in features:
-        detailed['Courses'] = {
-            'Attended': CourseAttended.query.filter_by(user_id=user_id).count(),
-            'Offered': CourseOffered.query.filter_by(user_id=user_id).count(),
-        }
+    except Exception as e:
+        print(f"Error in generate_detailed_stats: {e}")
+        pass
     
     return detailed
 
