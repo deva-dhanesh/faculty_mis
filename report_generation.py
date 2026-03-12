@@ -142,7 +142,7 @@ def generate_publication_chart(user_id):
     
     fig = go.Figure(data=[
         go.Bar(x=list(type_counts.keys()), y=list(type_counts.values()),
-               marker=dict(color=['#2563eb', '#16a34a']))
+               marker=dict(color='#2563eb'))
     ])
     fig.update_layout(
         title="Publications by Type",
@@ -150,7 +150,9 @@ def generate_publication_chart(user_id):
         yaxis_title="Count",
         height=400,
         hovermode='x unified',
-        margin=dict(l=40, r=20, t=40, b=40)
+        margin=dict(l=40, r=20, t=40, b=40),
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)'
     )
     return fig.to_html(div_id="pub_chart", include_plotlyjs='cdn')
 
@@ -405,3 +407,155 @@ def generate_detailed_stats(user_id, features):
         }
     
     return detailed
+
+
+def generate_pdf_report(user, features, summary, interpretation, detailed_stats, current_date):
+    """Generate PDF report and return file path"""
+    from reportlab.lib.pagesizes import letter, A4
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib.units import inch
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak, Image
+    from reportlab.lib import colors
+    from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_JUSTIFY
+    import os
+    import html
+    from io import StringIO
+    
+    # Create temp directory if not exists
+    temp_dir = "temp_reports"
+    if not os.path.exists(temp_dir):
+        os.makedirs(temp_dir)
+    
+    pdf_path = os.path.join(temp_dir, f"report_{user.id}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf")
+    
+    # Create PDF
+    doc = SimpleDocTemplate(pdf_path, pagesize=letter, topMargin=0.5*inch, bottomMargin=0.5*inch)
+    styles = getSampleStyleSheet()
+    
+    # Custom styles
+    title_style = ParagraphStyle(
+        'CustomTitle',
+        parent=styles['Heading1'],
+        fontSize=24,
+        textColor=colors.HexColor('#1e293b'),
+        spaceAfter=6,
+        alignment=TA_CENTER
+    )
+    
+    heading_style = ParagraphStyle(
+        'CustomHeading',
+        parent=styles['Heading2'],
+        fontSize=14,
+        textColor=colors.HexColor('#0f172a'),
+        spaceAfter=12,
+        spaceBefore=12,
+        borderColor=colors.HexColor('#2563eb'),
+        borderWidth=2,
+        borderPadding=6
+    )
+    
+    normal_style = ParagraphStyle(
+        'CustomNormal',
+        parent=styles['Normal'],
+        fontSize=10,
+        textColor=colors.HexColor('#475569'),
+        alignment=TA_JUSTIFY,
+        spaceAfter=8
+    )
+    
+    # Build elements
+    elements = []
+    
+    # Title
+    elements.append(Paragraph("Academic Performance Report", title_style))
+    elements.append(Spacer(1, 0.2*inch))
+    
+    # User info
+    user_info = f"<b>Faculty:</b> {user.name} ({user.email})<br/><b>Generated:</b> {current_date}"
+    elements.append(Paragraph(user_info, normal_style))
+    elements.append(Spacer(1, 0.3*inch))
+    
+    # Executive Summary
+    elements.append(Paragraph("Executive Summary", heading_style))
+    
+    summary_data = [["Metric", "Count"]]
+    if summary.get('total_publications'):
+        summary_data.append(["Publications", str(summary['total_publications'])])
+    if summary.get('total_projects'):
+        summary_data.append(["Research Projects", str(summary['total_projects'])])
+    if summary.get('total_books'):
+        summary_data.append(["Books & Chapters", str(summary['total_books'])])
+    if summary.get('total_patents'):
+        summary_data.append(["Patents", str(summary['total_patents'])])
+    if summary.get('total_awards'):
+        summary_data.append(["Awards", str(summary['total_awards'])])
+    if summary.get('total_conferences'):
+        summary_data.append(["Conferences", str(summary['total_conferences'])])
+    if summary.get('total_fdp'):
+        summary_data.append(["FDP Programs", str(summary['total_fdp'])])
+    if summary.get('total_courses'):
+        summary_data.append(["Courses", str(summary['total_courses'])])
+    
+    if len(summary_data) > 1:
+        summary_table = Table(summary_data, colWidths=[3*inch, 1.5*inch])
+        summary_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#2563eb')),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, 0), 11),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+            ('GRID', (0, 0), (-1, -1), 1, colors.black),
+            ('FONTSIZE', (0, 1), (-1, -1), 10),
+            ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#f8fafc')])
+        ]))
+        elements.append(summary_table)
+        elements.append(Spacer(1, 0.2*inch))
+    
+    # Analysis & Insights
+    if interpretation:
+        elements.append(Paragraph("Analysis & Insights", heading_style))
+        # Strip HTML tags from interpretation
+        clean_text = interpretation.replace('<div style=\'color:#475569;line-height:1.8;\'>', '').replace('</div>', '')
+        clean_text = clean_text.replace('<p><strong>', '<b>').replace('</strong>', '</b>')
+        clean_text = clean_text.replace('</p>', '<br/>')
+        elements.append(Paragraph(clean_text, normal_style))
+        elements.append(Spacer(1, 0.2*inch))
+    
+    # Detailed Statistics
+    if detailed_stats:
+        elements.append(PageBreak())
+        elements.append(Paragraph("Detailed Statistics", heading_style))
+        
+        for category, stats in detailed_stats.items():
+            elements.append(Paragraph(f"<b>{category}</b>", ParagraphStyle('SubHeading', parent=styles['Normal'], fontSize=11, textColor=colors.HexColor('#1e40af'))))
+            stats_data = [["Metric", "Count"]]
+            for stat_name, stat_value in stats.items():
+                stats_data.append([stat_name, str(stat_value)])
+            
+            stats_table = Table(stats_data, colWidths=[3*inch, 1.5*inch])
+            stats_table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#e0f2fe')),
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.HexColor('#0c4a6e')),
+                ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('FONTSIZE', (0, 0), (-1, 0), 10),
+                ('BOTTOMPADDING', (0, 0), (-1, 0), 8),
+                ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#cbd5e1')),
+                ('FONTSIZE', (0, 1), (-1, -1), 9),
+                ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#f0f9ff')])
+            ]))
+            elements.append(stats_table)
+            elements.append(Spacer(1, 0.1*inch))
+    
+    # Footer
+    elements.append(Spacer(1, 0.3*inch))
+    footer_text = f"<i>This report was automatically generated by Faculty MIS on {current_date}</i>"
+    elements.append(Paragraph(footer_text, ParagraphStyle('Footer', parent=styles['Normal'], fontSize=8, textColor=colors.grey, alignment=TA_CENTER)))
+    
+    # Build PDF
+    doc.build(elements)
+    
+    return pdf_path
+

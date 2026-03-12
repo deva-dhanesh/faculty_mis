@@ -23,8 +23,15 @@
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
 
       <div style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:8px;padding:24px;margin-bottom:24px;">
-        <h3 style="margin-top:0;color:#1e293b;">Select Features to Include:</h3>
-        <p style="color:#64748b;font-size:13px;">You need to select at least one feature to generate a report.</p>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+          <div>
+            <h3 style="margin:0;color:#1e293b;">Select Features to Include:</h3>
+            <p style="color:#64748b;font-size:13px;margin-top:4px;">You need to select at least one feature to generate a report.</p>
+          </div>
+          <button type="button" onclick="selectAllFeatures()" class="btn btn-ghost" style="white-space:nowrap;">
+            Select All
+          </button>
+        </div>
 
         <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:16px;">
           
@@ -121,13 +128,37 @@
         </div>
       </div>
 
+      <div style="background:#f0fdf4;border:1.5px solid #86efac;border-radius:8px;padding:16px;margin-bottom:24px;">
+        <div style="display:flex;gap:12px;align-items:center;">
+          <div style="flex-shrink:0;width:20px;height:20px;background:#22c55e;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;">✓</div>
+          <div>
+            <strong style="color:#166534;">HTML Report Available</strong>
+            <p style="color:#15803d;font-size:13px;margin:4px 0 0 0;">Generate an interactive HTML report with charts and analysis (default)</p>
+          </div>
+        </div>
+      </div>
+
+      <div style="background:#fef3c7;border:1.5px solid #fcd34d;border-radius:8px;padding:16px;margin-bottom:24px;">
+        <div style="display:flex;gap:12px;">
+          <div style="flex-shrink:0;width:20px;height:20px;background:#f59e0b;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;">📄</div>
+          <div>
+            <strong style="color:#92400e;">PDF Report Available</strong>
+            <p style="color:#b45309;font-size:13px;margin:4px 0 0 0;">Choose PDF format for easy sharing and printing</p>
+            <div style="margin-top:12px;display:flex;gap:8px;">
+              <button type="submit" name="report_format" value="pdf_selected" class="btn btn-sm" style="background:#f59e0b;color:white;border:none;cursor:pointer;">PDF (Selected Features)</button>
+              <button type="submit" name="report_format" value="pdf_all" class="btn btn-sm" style="background:#f59e0b;color:white;border:none;cursor:pointer;">PDF (All Features)</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="form-actions">
-        <button type="submit" id="generate_btn" class="btn btn-primary" onclick="return validateSelection()">
+        <button type="submit" id="generate_btn" name="report_format" value="html" class="btn btn-primary" onclick="return validateSelection()">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:8px;">
             <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
             <polyline points="17 6 23 6 23 12"></polyline>
           </svg>
-          Generate Report
+          Generate HTML Report
         </button>
         <a href="{{ url_for('faculty_dashboard') }}" class="btn btn-ghost">Cancel</a>
       </div>
@@ -136,6 +167,15 @@
 </div>
 
 <script>
+function selectAllFeatures() {
+  var checkboxes = document.querySelectorAll('input[name="features"]');
+  var allChecked = Array.from(checkboxes).every(cb => cb.checked);
+  
+  checkboxes.forEach(function(checkbox) {
+    checkbox.checked = !allChecked;
+  });
+}
+
 function validateSelection() {
   var checkboxes = document.querySelectorAll('input[name="features"]:checked');
   if (checkboxes.length === 0) {
@@ -144,9 +184,16 @@ function validateSelection() {
   }
   var btn = document.getElementById('generate_btn');
   btn.disabled = true;
-  btn.textContent = 'Generating Report…';
+  btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:8px;animation:spin 1s linear infinite;"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg>Generating Report…';
   return true;
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+  // Add animation style
+  var style = document.createElement('style');
+  style.textContent = '@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } } svg { display: inline-block; }';
+  document.head.appendChild(style);
+});
 </script>
 
 {% endblock %}

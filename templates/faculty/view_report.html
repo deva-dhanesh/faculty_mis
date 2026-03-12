@@ -27,35 +27,53 @@
     <h2>📊 Executive Summary</h2>
   </div>
   <div class="card-body">
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:16px;">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-bottom:16px;">
       {% if summary.total_publications %}
-      <div style="background:#eff6ff;border-left:3px solid #2563eb;padding:12px;">
+      <div style="background:#eff6ff;border-left:4px solid #2563eb;padding:14px;border-radius:4px;">
         <div style="font-size:28px;font-weight:700;color:#1e40af;">{{ summary.total_publications }}</div>
-        <div style="color:#64748b;font-size:13px;">Publications</div>
+        <div style="color:#64748b;font-size:13px;margin-top:4px;">Publications</div>
       </div>
       {% endif %}
       {% if summary.total_projects %}
-      <div style="background:#f0fdf4;border-left:3px solid #16a34a;padding:12px;">
+      <div style="background:#f0fdf4;border-left:4px solid #16a34a;padding:14px;border-radius:4px;">
         <div style="font-size:28px;font-weight:700;color:#15803d;">{{ summary.total_projects }}</div>
-        <div style="color:#64748b;font-size:13px;">Projects</div>
+        <div style="color:#64748b;font-size:13px;margin-top:4px;">Projects</div>
       </div>
       {% endif %}
       {% if summary.total_books %}
-      <div style="background:#fef3c7;border-left:3px solid #d97706;padding:12px;">
+      <div style="background:#fef3c7;border-left:4px solid #d97706;padding:14px;border-radius:4px;">
         <div style="font-size:28px;font-weight:700;color:#b45309;">{{ summary.total_books }}</div>
-        <div style="color:#64748b;font-size:13px;">Books & Chapters</div>
+        <div style="color:#64748b;font-size:13px;margin-top:4px;">Books & Chapters</div>
       </div>
       {% endif %}
       {% if summary.total_patents %}
-      <div style="background:#fce7f3;border-left:3px solid #db2777;padding:12px;">
+      <div style="background:#fce7f3;border-left:4px solid #db2777;padding:14px;border-radius:4px;">
         <div style="font-size:28px;font-weight:700;color:#be185d;">{{ summary.total_patents }}</div>
-        <div style="color:#64748b;font-size:13px;">Patents</div>
+        <div style="color:#64748b;font-size:13px;margin-top:4px;">Patents</div>
       </div>
       {% endif %}
       {% if summary.total_awards %}
-      <div style="background:#faf5ff;border-left:3px solid #9333ea;padding:12px;">
+      <div style="background:#faf5ff;border-left:4px solid #9333ea;padding:14px;border-radius:4px;">
         <div style="font-size:28px;font-weight:700;color:#6b21a8;">{{ summary.total_awards }}</div>
-        <div style="color:#64748b;font-size:13px;">Awards</div>
+        <div style="color:#64748b;font-size:13px;margin-top:4px;">Awards</div>
+      </div>
+      {% endif %}
+      {% if summary.total_conferences %}
+      <div style="background:#fef3c7;border-left:4px solid #f59e0b;padding:14px;border-radius:4px;">
+        <div style="font-size:28px;font-weight:700;color:#92400e;">{{ summary.total_conferences }}</div>
+        <div style="color:#64748b;font-size:13px;margin-top:4px;">Conferences</div>
+      </div>
+      {% endif %}
+      {% if summary.total_fdp %}
+      <div style="background:#f0f9ff;border-left:4px solid #0284c7;padding:14px;border-radius:4px;">
+        <div style="font-size:28px;font-weight:700;color:#075985;">{{ summary.total_fdp }}</div>
+        <div style="color:#64748b;font-size:13px;margin-top:4px;">FDP Programs</div>
+      </div>
+      {% endif %}
+      {% if summary.total_courses %}
+      <div style="background:#f5f3ff;border-left:4px solid #7c3aed;padding:14px;border-radius:4px;">
+        <div style="font-size:28px;font-weight:700;color:#5b21b6;">{{ summary.total_courses }}</div>
+        <div style="color:#64748b;font-size:13px;margin-top:4px;">Courses</div>
       </div>
       {% endif %}
     </div>
@@ -63,7 +81,7 @@
 </div>
 
 <!-- Visualizations -->
-{% if charts %}
+{% if charts and charts|length > 0 %}
 <div class="card" style="margin-bottom:24px;">
   <div class="card-header">
     <h2>📈 Visual Analytics</h2>
@@ -71,7 +89,7 @@
   <div class="card-body">
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(500px,1fr));gap:20px;">
       {% for chart in charts %}
-      <div style="background:#f8fafc;border-radius:8px;padding:16px;border:1px solid #e2e8f0;">
+      <div style="background:#f8fafc;border-radius:8px;padding:12px;border:1px solid #e2e8f0;overflow:auto;">
         {{ chart | safe }}
       </div>
       {% endfor %}
@@ -93,7 +111,7 @@
 {% endif %}
 
 <!-- Detailed Statistics -->
-{% if detailed_stats %}
+{% if detailed_stats and detailed_stats|length > 0 %}
 <div class="card">
   <div class="card-header">
     <h2>📋 Detailed Statistics</h2>
@@ -102,12 +120,15 @@
     <div style="display:grid;gap:20px;">
       {% for category, stats in detailed_stats.items() %}
       <div style="border-bottom:1px solid #e2e8f0;padding-bottom:16px;">
-        <h3 style="color:#1e293b;margin-bottom:12px;">{{ category }}</h3>
-        <ul style="margin:0;padding-left:20px;color:#475569;font-size:13.5px;line-height:1.8;">
-          {% for stat_name, stat_value in stats.items() %}
-          <li>{{ stat_name }}: <strong>{{ stat_value }}</strong></li>
+        <h3 style="color:#1e293b;margin:0 0 12px 0;font-size:14px;">{{ category }}</h3>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;">
+          {% for stat_name, stat_value %}
+          <div style="background:#f8fafc;padding:10px;border-radius:4px;border:1px solid #e2e8f0;">
+            <div style="color:#64748b;font-size:12px;">{{ stat_name }}</div>
+            <div style="color:#1e293b;font-weight:600;font-size:18px;margin-top:4px;">{{ stat_value }}</div>
+          </div>
           {% endfor %}
-        </ul>
+        </div>
       </div>
       {% endfor %}
     </div>

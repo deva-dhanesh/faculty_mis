@@ -519,35 +519,62 @@ def generate_faculty_report():
     
     # Get selected features from form
     selected_features = request.form.getlist("features")
+    report_format = request.form.get("report_format", "html")
     
-    if not selected_features:
+    # If PDF format selected, check if "all features" requested
+    if report_format in ["pdf_all"]:
+        selected_features = ["publications", "projects", "books", "patents", "awards", "conferences", "fdp", "courses", "guest_lectures", "fellowships"]
+    elif not selected_features and report_format.startswith("pdf"):
+        flash("Please select at least one feature.", "error")
+        return redirect(url_for("generate_report_page"))
+    elif not selected_features:
         flash("Please select at least one feature.", "error")
         return redirect(url_for("generate_report_page"))
     
     try:
         from report_generation import (
             generate_charts, generate_interpretation, 
-            compile_summary, generate_detailed_stats
+            compile_summary, generate_detailed_stats, generate_pdf_report
         )
         
         user_id = session["user_id"]
+        user = User.query.get(user_id)
         
         # Generate all report components
         charts = generate_charts(user_id, selected_features)
         interpretation = generate_interpretation(user_id, selected_features)
         summary = compile_summary(user_id, selected_features)
         detailed_stats = generate_detailed_stats(user_id, selected_features)
+        current_date = datetime.now().strftime("%d %B %Y")
         
         log_action(f"Faculty generated report with features: {', '.join(selected_features)}")
         
-        return render_template(
-            "faculty/view_report.html",
-            charts=charts,
-            interpretation=interpretation,
-            summary=summary,
-            detailed_stats=detailed_stats,
-            current_date=datetime.now().strftime("%d %B %Y")
-        )
+        # If PDF requested, generate and send PDF
+        if report_format.startswith("pdf"):
+            try:
+                pdf_filename = generate_pdf_report(
+                    user=user,
+                    features=selected_features,
+                    summary=summary,
+                    interpretation=interpretation,
+                    detailed_stats=detailed_stats,
+                    current_date=current_date
+                )
+                return send_file(pdf_filename, as_attachment=True, download_name=f"Academic_Report_{user_id}.pdf")
+            except Exception as e:
+                flash(f"Error generating PDF: {str(e)}", "error")
+                return redirect(url_for("generate_report_page"))
+        else:
+            # Return HTML report
+            return render_template(
+                "faculty/view_report.html",
+                charts=charts,
+                interpretation=interpretation,
+                summary=summary,
+                detailed_stats=detailed_stats,
+                current_date=current_date,
+                selected_features=selected_features
+            )
     
     except Exception as e:
         flash(f"Error generating report: {str(e)}", "error")
