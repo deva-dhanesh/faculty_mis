@@ -1,0 +1,152 @@
+{% extends "layouts/faculty_base.html" %}
+{% block title %}Generate Report{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>Academic Performance Report</h1>
+    <p>Select features to include in your personalized report with visual analytics and insights.</p>
+  </div>
+  <div class="page-header-actions">
+    <a href="{{ url_for('faculty_dashboard') }}" class="btn btn-ghost">← Dashboard</a>
+  </div>
+</div>
+
+<div class="form-card" style="max-width:900px;">
+  <div class="form-card-header">
+    <h2>Report Configuration</h2>
+    <p>Choose which academic activities to include in your report.</p>
+  </div>
+  <div class="form-card-body">
+    <form method="POST" action="{{ url_for('generate_faculty_report') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+      <div style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:8px;padding:24px;margin-bottom:24px;">
+        <h3 style="margin-top:0;color:#1e293b;">Select Features to Include:</h3>
+        <p style="color:#64748b;font-size:13px;">You need to select at least one feature to generate a report.</p>
+
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:16px;">
+          
+          <!-- Publications -->
+          <label style="display:flex;align-items:center;padding:12px;background:white;border-radius:6px;border:1.5px solid #e2e8f0;cursor:pointer;transition:all 0.2s;">
+            <input type="checkbox" name="features" value="publications" style="width:18px;height:18px;cursor:pointer;margin-right:12px;"/>
+            <div>
+              <div style="font-weight:600;color:#1e293b;font-size:14px;">Publications</div>
+              <div style="color:#64748b;font-size:12px;">Journal articles and conference papers</div>
+            </div>
+          </label>
+
+          <!-- Projects -->
+          <label style="display:flex;align-items:center;padding:12px;background:white;border-radius:6px;border:1.5px solid #e2e8f0;cursor:pointer;transition:all 0.2s;">
+            <input type="checkbox" name="features" value="projects" style="width:18px;height:18px;cursor:pointer;margin-right:12px;"/>
+            <div>
+              <div style="font-weight:600;color:#1e293b;font-size:14px;">Research Projects</div>
+              <div style="color:#64748b;font-size:12px;">Funded and ongoing projects</div>
+            </div>
+          </label>
+
+          <!-- Book Chapters -->
+          <label style="display:flex;align-items:center;padding:12px;background:white;border-radius:6px;border:1.5px solid #e2e8f0;cursor:pointer;transition:all 0.2s;">
+            <input type="checkbox" name="features" value="books" style="width:18px;height:18px;cursor:pointer;margin-right:12px;"/>
+            <div>
+              <div style="font-weight:600;color:#1e293b;font-size:14px;">Books & Chapters</div>
+              <div style="color:#64748b;font-size:12px;">Book publications and book chapters</div>
+            </div>
+          </label>
+
+          <!-- Patents -->
+          <label style="display:flex;align-items:center;padding:12px;background:white;border-radius:6px;border:1.5px solid #e2e8f0;cursor:pointer;transition:all 0.2s;">
+            <input type="checkbox" name="features" value="patents" style="width:18px;height:18px;cursor:pointer;margin-right:12px;"/>
+            <div>
+              <div style="font-weight:600;color:#1e293b;font-size:14px;">Patents</div>
+              <div style="color:#64748b;font-size:12px;">Patent filings and grants</div>
+            </div>
+          </label>
+
+          <!-- Awards & Recognitions -->
+          <label style="display:flex;align-items:center;padding:12px;background:white;border-radius:6px;border:1.5px solid #e2e8f0;cursor:pointer;transition:all 0.2s;">
+            <input type="checkbox" name="features" value="awards" style="width:18px;height:18px;cursor:pointer;margin-right:12px;"/>
+            <div>
+              <div style="font-weight:600;color:#1e293b;font-size:14px;">Awards & Recognition</div>
+              <div style="color:#64748b;font-size:12px;">Awards, honors, and recognitions</div>
+            </div>
+          </label>
+
+          <!-- Conferences -->
+          <label style="display:flex;align-items:center;padding:12px;background:white;border-radius:6px;border:1.5px solid #e2e8f0;cursor:pointer;transition:all 0.2s;">
+            <input type="checkbox" name="features" value="conferences" style="width:18px;height:18px;cursor:pointer;margin-right:12px;"/>
+            <div>
+              <div style="font-weight:600;color:#1e293b;font-size:14px;">Conferences</div>
+              <div style="color:#64748b;font-size:12px;">Participated and organized conferences</div>
+            </div>
+          </label>
+
+          <!-- FDP Programs -->
+          <label style="display:flex;align-items:center;padding:12px;background:white;border-radius:6px;border:1.5px solid #e2e8f0;cursor:pointer;transition:all 0.2s;">
+            <input type="checkbox" name="features" value="fdp" style="width:18px;height:18px;cursor:pointer;margin-right:12px;"/>
+            <div>
+              <div style="font-weight:600;color:#1e293b;font-size:14px;">FDP Programs</div>
+              <div style="color:#64748b;font-size:12px;">Faculty development programs</div>
+            </div>
+          </label>
+
+          <!-- Courses -->
+          <label style="display:flex;align-items:center;padding:12px;background:white;border-radius:6px;border:1.5px solid #e2e8f0;cursor:pointer;transition:all 0.2s;">
+            <input type="checkbox" name="features" value="courses" style="width:18px;height:18px;cursor:pointer;margin-right:12px;"/>
+            <div>
+              <div style="font-weight:600;color:#1e293b;font-size:14px;">Courses</div>
+              <div style="color:#64748b;font-size:12px;">Courses attended and offered</div>
+            </div>
+          </label>
+
+          <!-- Guest Lectures -->
+          <label style="display:flex;align-items:center;padding:12px;background:white;border-radius:6px;border:1.5px solid #e2e8f0;cursor:pointer;transition:all 0.2s;">
+            <input type="checkbox" name="features" value="guest_lectures" style="width:18px;height:18px;cursor:pointer;margin-right:12px;"/>
+            <div>
+              <div style="font-weight:600;color:#1e293b;font-size:14px;">Guest Lectures</div>
+              <div style="color:#64748b;font-size:12px;">Guest lecture engagements</div>
+            </div>
+          </label>
+
+          <!-- Fellowships -->
+          <label style="display:flex;align-items:center;padding:12px;background:white;border-radius:6px;border:1.5px solid #e2e8f0;cursor:pointer;transition:all 0.2s;">
+            <input type="checkbox" name="features" value="fellowships" style="width:18px;height:18px;cursor:pointer;margin-right:12px;"/>
+            <div>
+              <div style="font-weight:600;color:#1e293b;font-size:14px;">Fellowships</div>
+              <div style="color:#64748b;font-size:12px;">Fellowship awards and grants</div>
+            </div>
+          </label>
+
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" id="generate_btn" class="btn btn-primary" onclick="return validateSelection()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:8px;">
+            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+            <polyline points="17 6 23 6 23 12"></polyline>
+          </svg>
+          Generate Report
+        </button>
+        <a href="{{ url_for('faculty_dashboard') }}" class="btn btn-ghost">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+function validateSelection() {
+  var checkboxes = document.querySelectorAll('input[name="features"]:checked');
+  if (checkboxes.length === 0) {
+    alert('Please select at least one feature to generate the report.');
+    return false;
+  }
+  var btn = document.getElementById('generate_btn');
+  btn.disabled = true;
+  btn.textContent = 'Generating Report…';
+  return true;
+}
+</script>
+
+{% endblock %}

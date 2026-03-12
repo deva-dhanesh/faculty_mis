@@ -492,6 +492,69 @@ def faculty_dashboard():
 
 
 # =========================================================
+# GENERATE FACULTY REPORT
+# templates/faculty/generate_report.html
+# =========================================================
+
+@app.route("/generate_report")
+def generate_report_page():
+    """Display report generation selection page"""
+    
+    if session.get("role") != "faculty":
+        flash("Access denied", "error")
+        return redirect(url_for("login"))
+    
+    log_action("Faculty accessed report generation page")
+    
+    return render_template("faculty/generate_report.html")
+
+
+@app.route("/generate_faculty_report", methods=["POST"])
+def generate_faculty_report():
+    """Generate and display faculty report"""
+    
+    if session.get("role") != "faculty":
+        flash("Access denied", "error")
+        return redirect(url_for("login"))
+    
+    # Get selected features from form
+    selected_features = request.form.getlist("features")
+    
+    if not selected_features:
+        flash("Please select at least one feature.", "error")
+        return redirect(url_for("generate_report_page"))
+    
+    try:
+        from report_generation import (
+            generate_charts, generate_interpretation, 
+            compile_summary, generate_detailed_stats
+        )
+        
+        user_id = session["user_id"]
+        
+        # Generate all report components
+        charts = generate_charts(user_id, selected_features)
+        interpretation = generate_interpretation(user_id, selected_features)
+        summary = compile_summary(user_id, selected_features)
+        detailed_stats = generate_detailed_stats(user_id, selected_features)
+        
+        log_action(f"Faculty generated report with features: {', '.join(selected_features)}")
+        
+        return render_template(
+            "faculty/view_report.html",
+            charts=charts,
+            interpretation=interpretation,
+            summary=summary,
+            detailed_stats=detailed_stats,
+            current_date=datetime.now().strftime("%d %B %Y")
+        )
+    
+    except Exception as e:
+        flash(f"Error generating report: {str(e)}", "error")
+        return redirect(url_for("generate_report_page"))
+
+
+# =========================================================
 # VIEW FACULTY PROFILES
 # templates/admin/view_faculty_profiles.html
 # =========================================================
