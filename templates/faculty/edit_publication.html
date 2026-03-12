@@ -36,12 +36,19 @@
       <div class="form-grid">
         <div class="form-group">
           <label class="form-label" for="author_position">Position of Faculty as Author</label>
-          <select class="form-select" id="author_position" name="author_position">
+          <select class="form-select" id="author_position" name="author_position" onchange="toggleCustomPosition()">
             <option value="">— Select —</option>
             {% for val in ['First Author','Second Author','Third Author','Corresponding Author','Co-Author'] %}
-              <option value="{{ val }}" {% if pub.author_position == val %}selected{% endif %}>{{ val }}</option>
+              <option value="{{ val }}" {% if pub.author_position == val and val != 'Custom' %}selected{% endif %}>{{ val }}</option>
             {% endfor %}
+            <option value="Custom" {% if pub.author_position and pub.author_position not in ['First Author','Second Author','Third Author','Corresponding Author','Co-Author'] %}selected{% endif %}>Custom (Specify Below)</option>
           </select>
+        </div>
+        <div class="form-group" id="custom_position_div" style="{% if pub.author_position and pub.author_position not in ['First Author','Second Author','Third Author','Corresponding Author','Co-Author'] %}display:block;{% else %}display:none;{% endif %}">
+          <label class="form-label" for="author_position_custom">Specify Custom Author Position</label>
+          <input class="form-input" type="text" id="author_position_custom" name="author_position_custom"
+                 value="{% if pub.author_position and pub.author_position not in ['First Author','Second Author','Third Author','Corresponding Author','Co-Author'] %}{{ pub.author_position }}{% endif %}"
+                 placeholder="e.g. Joint First Author, Lead Author, etc."/>
         </div>
         <div class="form-group">
           <label class="form-label" for="scholar_id">Scopus ID / ORCID ID / Google Scholar ID</label>
@@ -79,7 +86,7 @@
           <label class="form-label" for="journal_quartile">Journal Quartile</label>
           <select class="form-select" id="journal_quartile" name="journal_quartile">
             <option value="">— Select —</option>
-            {% for val in ['Q1','Q2','Q3','Q4'] %}
+            {% for val in ['Q1','Q2','Q3','Q4','None'] %}
               <option value="{{ val }}" {% if pub.journal_quartile == val %}selected{% endif %}>{{ val }}</option>
             {% endfor %}
           </select>
@@ -132,5 +139,38 @@
     </form>
   </div>
 </div>
+
+<script>
+// Toggle custom author position input
+function toggleCustomPosition() {
+  var select = document.getElementById('author_position');
+  var customDiv = document.getElementById('custom_position_div');
+  var customInput = document.getElementById('author_position_custom');
+  
+  if (select.value === 'Custom') {
+    customDiv.style.display = 'block';
+    customInput.focus();
+  } else {
+    customDiv.style.display = 'none';
+    customInput.value = '';
+  }
+}
+
+// Handle form submission to merge custom position with hidden field
+document.querySelector('form').addEventListener('submit', function(e) {
+  var select = document.getElementById('author_position');
+  var customInput = document.getElementById('author_position_custom');
+  
+  if (select.value === 'Custom') {
+    if (!customInput.value.trim()) {
+      e.preventDefault();
+      alert('Please specify the custom author position.');
+      customInput.focus();
+      return;
+    }
+    select.value = customInput.value.trim();
+  }
+});
+</script>
 
 {% endblock %}

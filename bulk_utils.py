@@ -67,7 +67,7 @@ PUB_COLS = [
     ("ISSN / ISBN",                              16),
     ("h-index",                                  10),
     ("Citation Index",                           14),
-    ("Journal Quartile (Q1/Q2/Q3/Q4)",           18),
+    ("Journal Quartile (Q1/Q2/Q3/Q4/None)",      18),
     ("Type (Journal/Conference)",                 20),
     ("Impact Factor",                            14),
     ("Indexing",                                 18),
@@ -93,8 +93,8 @@ PUB_SAMPLE = [
 ]
 
 AUTHOR_POSITION_OPTIONS = ["First Author", "Second Author", "Third Author",
-                           "Corresponding Author", "Co-Author"]
-QUARTILE_OPTIONS  = ["Q1", "Q2", "Q3", "Q4"]
+                           "Corresponding Author", "Co-Author", "Custom"]
+QUARTILE_OPTIONS  = ["Q1", "Q2", "Q3", "Q4", "None"]
 PUB_TYPE_OPTIONS  = ["Journal", "Conference"]
 INDEXING_OPTIONS   = ["Scopus", "WoS", "UGC CARE", "PubMed", "Others"]
 
