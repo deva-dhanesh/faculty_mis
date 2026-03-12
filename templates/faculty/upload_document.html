@@ -74,37 +74,3 @@
 </div>
 
 {% endblock %}
-
-<h2>Upload Faculty Document</h2>
-
-<form method="POST" enctype="multipart/form-data">
-<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-
-Document Type:<br>
-<select name="document_type">
-
-<option>Appointment Letter</option>
-<option>Degree Certificate</option>
-<option>PAN Proof</option>
-<option>Relieving Letter</option>
-<option>Research Certificate</option>
-
-</select>
-
-<br><br>
-
-Select File:<br>
-<input type="file" name="file" required>
-
-<br><br>
-
-<button type="submit">Upload</button>
-
-</form>
-
-<br>
-
-<a href="/faculty_dashboard">Back</a>
-
-</body>
-</html>

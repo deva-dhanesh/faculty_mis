@@ -68,37 +68,6 @@
 
 {% endblock %}
 
-<h2>My Uploaded Documents</h2>
-
-<!-- Flash Messages -->
-{% with messages = get_flashed_messages() %}
-  {% if messages %}
-    {% for message in messages %}
-      <p style="color:green;"><strong>{{ message }}</strong></p>
-    {% endfor %}
-  {% endif %}
-{% endwith %}
-
-<br>
-
-<a href="/faculty_dashboard">Back to Dashboard</a>
-
-<br><br>
-
-{% if documents and documents|length > 0 %}
-
-<table border="1" cellpadding="8" cellspacing="0">
-
-<tr>
-    <th>ID</th>
-    <th>Document Type</th>
-    <th>File Name</th>
-    <th>Uploaded At</th>
-    <th>Download</th>
-</tr>
-
-{% for doc in documents %}
-
 <tr>
 
 <td>{{ doc.id }}</td>

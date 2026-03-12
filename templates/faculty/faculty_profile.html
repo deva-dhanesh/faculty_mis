@@ -179,35 +179,6 @@
 </form>
 
 {% endblock %}
-
-<h2>Faculty Profile Form</h2>
-
-{% with messages = get_flashed_messages() %}
-  {% if messages %}
-    {% for message in messages %}
-      <p style="color:green;">{{ message }}</p>
-    {% endfor %}
-  {% endif %}
-{% endwith %}
-
-<form method="POST">
-<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-
-<h3>Basic Information</h3>
-
-Employee ID:<br>
-<input type="text"
-value="{{ profile.employee_id if profile else '' }}"
-disabled
-style="background:#f1f5f9; color:#64748b; cursor:not-allowed;"
-title="Employee ID is managed by admin and cannot be changed."><br><br>
-
-Full Name:<br>
-<input type="text" name="full_name"
-value="{{ profile.full_name if profile else '' }}"><br><br>
-
-PAN:<br>
-<input type="text" name="pan"
 value="{{ profile.pan if profile else '' }}"><br><br>
 
 Designation:<br>
