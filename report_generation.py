@@ -632,83 +632,8 @@ def generate_pdf_report(user, features, summary, interpretation, detailed_stats,
         elements.append(Paragraph("Analysis & Insights", heading_style))
         # Strip HTML tags from interpretation
         clean_text = interpretation.replace('<div style=\'color:#475569;line-height:1.8;\'>', '').replace('</div>', '')
-        clean_text = clean_text.replace('<p><strong>', '<b>').replace('</strong>', '</b>')
-        clean_text = clean_text.replace('</p>', '<br/>')
-        elements.append(Paragraph(clean_text, normal_style))
-        elements.append(Spacer(1, 0.2*inch))
-    
-    # Detailed Statistics
-    if detailed_stats:
-        elements.append(PageBreak())
-        elements.append(Paragraph("Detailed Statistics", heading_style))
-        
-        for category, stats in detailed_stats.items():
-            elements.append(Paragraph(f"<b>{category}</b>", ParagraphStyle('SubHeading', parent=styles['Normal'], fontSize=11, textColor=colors.HexColor('#1e40af'))))
-            stats_data = [["Metric", "Count"]]
-            for stat_name, stat_value in stats.items():
-                stats_data.append([stat_name, str(stat_value)])
-            
-            stats_table = Table(stats_data, colWidths=[3*inch, 1.5*inch])
-            stats_table.setStyle(TableStyle([
-                ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#e0f2fe')),
-                ('TEXTCOLOR', (0, 0), (-1, 0), colors.HexColor('#0c4a6e')),
-                ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
-                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-                ('FONTSIZE', (0, 0), (-1, 0), 10),
-                ('BOTTOMPADDING', (0, 0), (-1, 0), 8),
-                ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#cbd5e1')),
-                ('FONTSIZE', (0, 1), (-1, -1), 9),
-                ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#f0f9ff')])
-            ]))
-            elements.append(stats_table)
-            elements.append(Spacer(1, 0.1*inch))
-    
-    # Footer
-    elements.append(Spacer(1, 0.3*inch))
-    footer_text = f"<i>Report automatically generated on {current_date}</i>"
-    elements.append(Paragraph(footer_text, ParagraphStyle('Footer', parent=styles['Normal'], fontSize=8, textColor=colors.grey, alignment=TA_CENTER)))
-    
-    # Build PDF
-    try:
-        doc.build(elements)
-        print(f"[PDF] Generated: {pdf_path}")
-        return pdf_path
-    except Exception as e:
-        print(f"[PDF] Build error: {e}")
-        raise
-    if summary.get('total_awards'):
-        summary_data.append(["Awards", str(summary['total_awards'])])
-    if summary.get('total_conferences'):
-        summary_data.append(["Conferences", str(summary['total_conferences'])])
-    if summary.get('total_fdp'):
-        summary_data.append(["FDP Programs", str(summary['total_fdp'])])
-    if summary.get('total_courses'):
-        summary_data.append(["Courses", str(summary['total_courses'])])
-    
-    if len(summary_data) > 1:
-        summary_table = Table(summary_data, colWidths=[3*inch, 1.5*inch])
-        summary_table.setStyle(TableStyle([
-            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#2563eb')),
-            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-            ('FONTSIZE', (0, 0), (-1, 0), 11),
-            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-            ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
-            ('GRID', (0, 0), (-1, -1), 1, colors.black),
-            ('FONTSIZE', (0, 1), (-1, -1), 10),
-            ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#f8fafc')])
-        ]))
-        elements.append(summary_table)
-        elements.append(Spacer(1, 0.2*inch))
-    
-    # Analysis & Insights
-    if interpretation:
-        elements.append(Paragraph("Analysis & Insights", heading_style))
-        # Strip HTML tags from interpretation
-        clean_text = interpretation.replace('<div style=\'color:#475569;line-height:1.8;\'>', '').replace('</div>', '')
-        clean_text = clean_text.replace('<p><strong>', '<b>').replace('</strong>', '</b>')
-        clean_text = clean_text.replace('</p>', '<br/>')
+        clean_text = clean_text.replace('<strong>', '<b>').replace('</strong>', '</b>')
+        clean_text = clean_text.replace('<p>', '').replace('</p>', '<br/>')
         elements.append(Paragraph(clean_text, normal_style))
         elements.append(Spacer(1, 0.2*inch))
     
